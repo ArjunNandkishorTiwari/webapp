@@ -12,8 +12,10 @@
 Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under prof. Tejas Parekh.
 
  
-
-#### Requirements:
+#### Prerequisites:
+1. Node
+2. npm
+#### Assignment Requirements:
 
 1. All API request/response payloads should be in JSON.
 2. No UI should be implemented for the application.
