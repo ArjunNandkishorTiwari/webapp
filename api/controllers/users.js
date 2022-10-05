@@ -1,12 +1,25 @@
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
-const {createNewUser} = require("../services/users");
+const {createNewUser, getUserData, updateUserRecord } = require("../services/users");
 
 
 
 module.exports = {
 
     createUser : (req,res) => {
+        if (
+            req.body.password == null ||  req.body.first_name == null || req.body.last_name == null || req.body.username == null
+
+
+            
+
+        ){
+
+            res.status(400).json({"msg" : "Please provide all the data"});
+            return;
+
+        }
         const {username,password,first_name,last_name} = req.body;
 
         const salt = bcrypt.genSaltSync(10) ;
@@ -15,8 +28,10 @@ module.exports = {
 
         var date  = new Date().toISOString();
 
+        var hashedId = crypto.randomBytes(16).toString("hex");
+
         const payload = {
-            
+            id : hashedId,
             username : username,
             password : hashedPassword,
             first_name : first_name,
@@ -31,21 +46,94 @@ module.exports = {
 
         createNewUser(payload, (err,result) => {
             if (err) {
-                console.log("check 5");
+               
                 res.status(400).send();
+                return;
             }
-            console.log("check 6");
+            
             res.status(201).send(result);
         });
 
         //res.status(200).send();
 
     },
-    getUser : (req,res) => {
-        res.status(200).send();
+    getUser : async (req,res) => {
+        const id = req.params.id;
+       
+
+        if (!id) {
+
+            res.status(400).send();
+
+        }
+
+        await getUserData(id, req.user, req.pass, (err, result)=>{
+            if (err){
+
+                console.log(err);
+                //res.status(403).send(err);
+                res.status(403).json({"msg" : "not authorized"});
+                return;
+                
+            }
+           
+            if (result.length == 0){
+                res.status(500).json({"msg":"Data not found"});
+                return;
+            }
+            
+            res.status(200).send(result);
+
+
+        })
+
+        
+
+
+        
     },
-    updateUser : (req,res) => {
-        res.status(200).send();
+    updateUser : async (req,res) => {
+        const id = req.params.id;
+
+        if (id == null){
+            res.status(400).send();
+            return;
+        }
+
+        if (
+            "id" in req.body ||  "account_created" in req.body || "account_updated" in req.body || "username" in req.body
+
+
+            
+
+        ){
+
+            res.status(400).json({"msg" : "Cannot update id, username, created date , updated date"});
+            return;
+
+        }
+
+        
+
+        await updateUserRecord(req, (err,result)=>{
+            if (err){
+
+                console.log(err);
+                //res.status(403).send(err);
+                res.status(403).json({"msg" : "not authorized"});
+                return;
+                
+            }
+           
+            if (result.length == 0){
+                res.status(500).json({"msg":"Data not found"});
+                return;
+            }
+            
+            return res.status(200).send(result);
+
+        })
+        
     }
 
 

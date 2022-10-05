@@ -3,7 +3,7 @@
 
 const auth = (req,res,next) => {
 
-    console.log("req?????",req.headers.authorization);
+   
 
     var authHead = req.headers.authorization;
 
@@ -18,7 +18,7 @@ const auth = (req,res,next) => {
     var username = auth[0];
     var password = auth[1];
 
-    console.log("!!!",username,password);
+   
 
     if (!username || !password){
         return res.status(401).send();
