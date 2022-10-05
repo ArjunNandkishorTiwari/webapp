@@ -21,40 +21,53 @@ const pool = createPool({
 module.exports = {
     createNewUser : (payload,callBackFunction) => {
 
+
+        pool.query(`select * from `+config.get("database")+`.users where username =?`,[payload.username], (err,resul,fields) => {
+            if (resul.length >= 1){
+                console.log("this side");
+                return callBackFunction(new Error("USer already exists"),null);
+            } else{
+
+                pool.query(
+                    `insert into `+config.get("database")+`.users (id,username,password,first_name,last_name,account_created,account_updated) values(?,?,?,?,?,?,?)`,
+                    [
+                        payload.id,
+                        payload.username,
+                        payload.password,
+                        payload.first_name,
+                        payload.last_name,
+                        payload.account_created,
+                        payload.account_updated
+                    ],(err,result) => {
+                        
+                        if (err) {
+                            console.log("48")
+                           
+                            return callBackFunction(err);
+                        }
+        
+                        
+        
+                        return callBackFunction(null,{
+                            id : payload.id,
+                            first_name : payload.first_name,
+                            last_name : payload.last_name,
+                            username : payload.username,
+                            account_created : payload.account_created,
+                            account_updated : payload.account_updated
+        
+        
+                        });
+        
+                    }
+                )
+            }
+        });
        
 
-        pool.query(
-            `insert into `+config.get("database")+`.users (id,username,password,first_name,last_name,account_created,account_updated) values(?,?,?,?,?,?,?)`,
-            [
-                payload.id,
-                payload.username,
-                payload.password,
-                payload.first_name,
-                payload.last_name,
-                payload.account_created,
-                payload.account_updated
-            ],(err,result) => {
-                
-                if (err) {
-                   
-                    return callBackFunction(err);
-                }
+        console.log("this check");
 
-                
-
-                return callBackFunction(null,{
-                    id : payload.id,
-                    first_name : payload.first_name,
-                    last_name : payload.last_name,
-                    username : payload.username,
-                    account_created : payload.account_created,
-                    account_updated : payload.account_updated
-
-
-                });
-
-            }
-        )
+        
 
     },
     getUserData :  (id,user, pass, callBackFunction) => {

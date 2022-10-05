@@ -7,7 +7,7 @@ const {createNewUser, getUserData, updateUserRecord } = require("../services/use
 
 module.exports = {
 
-    createUser : (req,res) => {
+    createUser : async(req,res) => {
         if (
             req.body.password == null ||  req.body.first_name == null || req.body.last_name == null || req.body.username == null
 
@@ -42,16 +42,23 @@ module.exports = {
 
 
         }
-        console.log(payload)
+        console.log("!!!!!",payload);
 
-        createNewUser(payload, (err,result) => {
+        await createNewUser(payload, (err,result) => {
             if (err) {
                
-                res.status(400).send();
+                return res.status(400).json({"msg" : "bad request"});
+                console.log("check 1 re baba");
                 return;
+            } else{
+
+                console.log("check 2 re baba");
+
+                return res.status(201).send(result);
+
             }
             
-            res.status(201).send(result);
+            
         });
 
         //res.status(200).send();
