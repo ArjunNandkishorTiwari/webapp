@@ -22,7 +22,6 @@ module.exports = {
 
         pool.query(`select * from `+config.get("database")+`.users where username =?`,[payload.username], (err,resul,fields) => {
             if (resul.length >= 1){
-                console.log("this side");
                 return callBackFunction(new Error("USer already exists"),null);
             } else{
 
@@ -39,7 +38,6 @@ module.exports = {
                     ],(err,result) => {
                         
                         if (err) {
-                            console.log("48")
                            
                             return callBackFunction(err);
                         }
@@ -63,7 +61,6 @@ module.exports = {
         });
        
 
-        console.log("this check");
 
         
 
@@ -75,7 +72,6 @@ module.exports = {
 
                 
                 if (err){
-                   console.log("check 1",err);
                     return callBackFunction(err);
                 }
 
