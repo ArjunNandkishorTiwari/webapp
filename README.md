@@ -20,6 +20,8 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 #### Prerequisites:
 1. Node
 2. npm
+3. Git Workflow
+4. Continuous Integration
 #### Assignment Requirements:
 
 1. All API request/response payloads should be in JSON.
