@@ -1,8 +1,5 @@
-//const {pool} = require("../../config/db");
 
 const {createPool} = require("mysql");
-//onst config = require("config");
-//const mysql = require("mysql");
 const config = require("config");
 const bcrypt = require("bcryptjs");
 const {comparePassword} = require("../helper/helper");
@@ -85,8 +82,6 @@ module.exports = {
 
     
                 if (result.length == 0){
-                    console.log("check 2");
-                    //const error = new Error("Data not found for id ");
                     
                     return callBackFunction(null,result); 
                 }
@@ -97,15 +92,13 @@ module.exports = {
 
                 const hash = comparePassword(pass,result[0].password);
 
-                console.log(hash);
 
                 if (hash == false){
                     return callBackFunction(new Error("Authentication Failed"));
                 }
 
                 if (result[0].username != user || result[0].id != id) {
-                    console.log("here in ")
-                    console.log("check 3",hash);
+                   
                    
                     return callBackFunction(new Error("Authentication Failed"));
                 }
@@ -121,8 +114,7 @@ module.exports = {
                     account_updated : result[0].account_updated
                 })
     
-               // return ;
-               // console.log("Fields",fields);
+              
             })
     
         } catch (error) {
@@ -139,36 +131,27 @@ module.exports = {
         const id = payload.params.id;
 
         pool.query(`select * from `+config.get("database")+`.users where id =?`,[id], (err,result,fields) => {
-            console.log("0");
             if (err){
                 return callBackFunction(err)
             }
-            console.log("1");
             if (result.length == 0){
-                console.log("check 2");
-                //const error = new Error("Data not found for id ");
                 
                 return callBackFunction(null,result); 
             }
-            console.log("2");
 
             const hash = comparePassword(payload.pass,result[0].password);
 
-                console.log(hash);
 
                 if (hash == false){
                     return callBackFunction(new Error("Authentication Failed"));
                 }
 
                 if (result[0].username != payload.user || result[0].id != id) {
-                    console.log("here in ")
-                    console.log("check 3",hash);
+                    
                    
                     return callBackFunction(new Error("Authentication Failed"));
                 }
-                console.log("3");
             if (payload.body.first_name){
-                console.log("here in first name");
 
                 var first_name = payload.body.first_name;
                 
@@ -186,7 +169,6 @@ module.exports = {
             }
 
             if (payload.body.password){
-                console.log("in password");
                 const salt = bcrypt.genSaltSync(10) ;
 
                 const hashedPassword = bcrypt.hashSync(payload.body.password,salt);
@@ -197,9 +179,7 @@ module.exports = {
                 var password = result[0].password;
                 
             }
-            console.log("4");
             var update_time = new Date().toISOString();
-            console.log("here");
             pool.query(`update `+config.get("database")+`.users set first_name = ?, last_name = ?, password = ?, account_updated = ? where id = ?`,
             [
                 first_name,
@@ -208,8 +188,6 @@ module.exports = {
                 update_time,
                 id
             ], (err,result)=> {
-                console.log("5");
-                console.log(err,result);
 
                 if (err){
                     return callBackFunction(err)
