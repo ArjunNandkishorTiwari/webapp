@@ -36,4 +36,5 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 1. Clone this repo locally 
 2. Use cd command on terminal to reach webapp directory
 3. run npm install to install all the dependencies
-4. run "npm run start" command on the terminal
+4. npm test for unit testing
+5. run "npm run start" command on the terminal
