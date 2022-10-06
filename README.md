@@ -2,7 +2,7 @@
 
 
 
-## Assignment - 1
+## Assignment - 2
 
 #### Name :- Arjun Nandkishor Tiwari
 #### NUID :- 002176236
@@ -20,6 +20,8 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 #### Prerequisites:
 1. Node
 2. npm
+3. Git Workflow
+4. Continuous Integration
 #### Assignment Requirements:
 
 1. All API request/response payloads should be in JSON.
@@ -34,4 +36,5 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 1. Clone this repo locally 
 2. Use cd command on terminal to reach webapp directory
 3. run npm install to install all the dependencies
-4. run "npm run start" command on the terminal
+4. npm test for unit testing
+5. run "npm run start" command on the terminal
