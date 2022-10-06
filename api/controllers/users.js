@@ -42,17 +42,13 @@ module.exports = {
 
 
         }
-        console.log("!!!!!",payload);
 
         await createNewUser(payload, (err,result) => {
             if (err) {
                
                 return res.status(400).json({"msg" : "bad request"});
-                console.log("check 1 re baba");
-                return;
             } else{
 
-                console.log("check 2 re baba");
 
                 return res.status(201).send(result);
 
@@ -77,8 +73,6 @@ module.exports = {
         await getUserData(id, req.user, req.pass, (err, result)=>{
             if (err){
 
-                console.log(err);
-                //res.status(403).send(err);
                 res.status(403).json({"msg" : "not authorized"});
                 return;
                 
@@ -125,8 +119,6 @@ module.exports = {
         await updateUserRecord(req, (err,result)=>{
             if (err){
 
-                console.log(err);
-                //res.status(403).send(err);
                 res.status(403).json({"msg" : "not authorized"});
                 return;
                 
