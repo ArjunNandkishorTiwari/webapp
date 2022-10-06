@@ -3,6 +3,8 @@ const crypto = require("crypto");
 
 const {createNewUser, getUserData, updateUserRecord } = require("../services/users");
 
+const {validateEmailId} = require("../helper/helper");
+
 
 
 module.exports = {
@@ -21,6 +23,12 @@ module.exports = {
 
         }
         const {username,password,first_name,last_name} = req.body;
+
+        const emailValidation = validateEmailId(username);
+
+        if (emailValidation == false) {
+            return res.status(400).json({"msg" : "bad request"});
+        }
 
         const salt = bcrypt.genSaltSync(10) ;
 
