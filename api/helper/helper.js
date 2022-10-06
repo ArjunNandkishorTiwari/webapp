@@ -9,7 +9,13 @@ const comparePassword = (text, hashed) => {
 
 }
 
+function validateEmailId(email) {
+    var re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  }
+
 
 module.exports = {
-    comparePassword
+    comparePassword,
+    validateEmailId
 }
