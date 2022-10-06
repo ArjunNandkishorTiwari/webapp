@@ -5,6 +5,7 @@ const {createPool} = require("mysql");
 //const mysql = require("mysql");
 const config = require("config");
 const bcrypt = require("bcryptjs");
+const {comparePassword} = require("../helper/helper");
 
 const pool = createPool({
     host : config.get("host"),
@@ -94,7 +95,7 @@ module.exports = {
                 
                
 
-                const hash = bcrypt.compareSync(pass,result[0].password);
+                const hash = comparePassword(pass,result[0].password);
 
                 console.log(hash);
 
@@ -104,7 +105,7 @@ module.exports = {
 
                 if (result[0].username != user || result[0].id != id) {
                     console.log("here in ")
-                    console.log("check 3",comp);
+                    console.log("check 3",hash);
                    
                     return callBackFunction(new Error("Authentication Failed"));
                 }
@@ -150,7 +151,8 @@ module.exports = {
                 return callBackFunction(null,result); 
             }
             console.log("2");
-            const hash = bcrypt.compareSync(payload.pass,result[0].password);
+
+            const hash = comparePassword(payload.pass,result[0].password);
 
                 console.log(hash);
 
@@ -160,7 +162,7 @@ module.exports = {
 
                 if (result[0].username != payload.user || result[0].id != id) {
                     console.log("here in ")
-                    console.log("check 3",comp);
+                    console.log("check 3",hash);
                    
                     return callBackFunction(new Error("Authentication Failed"));
                 }

@@ -137,7 +137,7 @@ module.exports = {
                 return;
             }
             
-            return res.status(200).send(result);
+            return res.status(204).send(result);
 
         })
         
