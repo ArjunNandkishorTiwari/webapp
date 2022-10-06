@@ -1,0 +1,7 @@
+{
+    "user" : "root",
+    "host" : "localhost",
+    "password" : "root2412",
+    "database" : "apidb",
+    "port" : "3306"
+}
