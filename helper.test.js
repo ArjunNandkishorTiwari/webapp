@@ -4,7 +4,7 @@ const conf = require("../webapp/config/conf");
 
 
 test("Check if password is correct", ()=> {
-    expect(comparePassword(conf.passTest,conf.passHash)).toBe(true);
+    expect(comparePassword("password","$2a$10$bJs3diwJwAxAISenl/4bs.U370vn6sV/xYniyTXtN7l3f.sCB77qS")).toBe(true);
 
 });
 
