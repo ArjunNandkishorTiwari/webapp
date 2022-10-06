@@ -2,7 +2,11 @@
 
 node_modules/
 
+config/default.json
+config/conf.js
+
 .DS_Store
+
 
 
 # Logs
