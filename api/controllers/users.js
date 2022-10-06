@@ -119,7 +119,7 @@ module.exports = {
         await updateUserRecord(req, (err,result)=>{
             if (err){
 
-                res.status(403).json({"msg" : "not authorized"});
+                res.status(403).json({"msg" : "Forbidden"});
                 return;
                 
             }
