@@ -3,6 +3,7 @@ const {createPool} = require("mysql");
 const config = require("config");
 const bcrypt = require("bcryptjs");
 const {comparePassword} = require("../helper/helper");
+const User = require("../models/users");
 
 const pool = createPool({
     host : config.get("host"),

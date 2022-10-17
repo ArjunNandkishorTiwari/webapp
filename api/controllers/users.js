@@ -51,7 +51,7 @@ module.exports = {
 
         }
 
-        await createNewUser(payload, (err,result) => {
+        /*response = await createNewUser(payload, (err,result) => {
             if (err) {
                
                 return res.status(400).json({"msg" : "bad request"});
@@ -63,7 +63,7 @@ module.exports = {
             }
             
             
-        });
+        });*/
 
         //res.status(200).send();
 

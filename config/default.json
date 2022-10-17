@@ -3,5 +3,9 @@
     "host" : "localhost",
     "password" : "root2412",
     "database" : "apidb",
-    "port" : "3306"
+    "port" : "3306",
+    "dialect" : "mysql",
+    "poolMax" : "5",
+    "poolMin" : "0"
+
 }
