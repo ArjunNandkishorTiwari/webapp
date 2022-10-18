@@ -17,6 +17,7 @@ module.exports = {
             
 
         ){
+            console.log("check 0");
 
             res.status(400).json({"msg" : "Please provide all the data"});
             return;
@@ -27,6 +28,7 @@ module.exports = {
         const emailValidation = validateEmailId(username);
 
         if (emailValidation == false) {
+            console.log("check 1");
             return res.status(400).json({"msg" : "bad request"});
         }
 
@@ -51,21 +53,20 @@ module.exports = {
 
         }
 
-        /*response = await createNewUser(payload, (err,result) => {
-            if (err) {
-               
-                return res.status(400).json({"msg" : "bad request"});
-            } else{
 
+        const response = await createNewUser(payload);
 
-                return res.status(201).send(result);
+        console.log(response);
 
-            }
-            
-            
-        });*/
+        if (response.status == 400){
+            console.log("check 2");
+            return res.status(400).json({"msg" : "bad request"})
+        }
+        else{
+            return res.status(201).json(response);
+        }
 
-        //res.status(200).send();
+       
 
     },
     getUser : async (req,res) => {
@@ -78,23 +79,30 @@ module.exports = {
 
         }
 
-        await getUserData(id, req.user, req.pass, (err, result)=>{
-            if (err){
+        response = await getUserData(id, req.user, req.pass);
 
-                res.status(403).json({"msg" : "not authorized"});
-                return;
+        if (response.status == 400){
+            res.status(400).json({"msg":"user not found"});
+            return;
+        }
+
+        // await getUserData(id, req.user, req.pass, (err, result)=>{
+        //     if (err){
+
+        //         res.status(403).json({"msg" : "not authorized"});
+        //         return;
                 
-            }
+        //     }
            
-            if (result.length == 0){
-                res.status(500).json({"msg":"Data not found"});
-                return;
-            }
+        //     if (result.length == 0){
+        //         res.status(500).json({"msg":"Data not found"});
+        //         return;
+        //     }
             
-            res.status(200).send(result);
+        //     res.status(200).send(result);
 
 
-        })
+        // })
 
         
 

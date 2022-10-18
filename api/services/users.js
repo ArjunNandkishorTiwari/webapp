@@ -18,57 +18,62 @@ const pool = createPool({
 
 
 module.exports = {
-    createNewUser : (payload,callBackFunction) => {
+    createNewUser : async (payload) => {
 
+        const user = await User.findOne({where : {username: payload.username}})
 
-        pool.query(`select * from `+config.get("database")+`.users where username =?`,[payload.username], (err,resul,fields) => {
-            if (resul.length >= 1){
-                return callBackFunction(new Error("USer already exists"),null);
-            } else{
-
-                pool.query(
-                    `insert into `+config.get("database")+`.users (id,username,password,first_name,last_name,account_created,account_updated) values(?,?,?,?,?,?,?)`,
-                    [
-                        payload.id,
-                        payload.username,
-                        payload.password,
-                        payload.first_name,
-                        payload.last_name,
-                        payload.account_created,
-                        payload.account_updated
-                    ],(err,result) => {
-                        
-                        if (err) {
-                           
-                            return callBackFunction(err);
-                        }
-        
-                        
-        
-                        return callBackFunction(null,{
-                            id : payload.id,
-                            first_name : payload.first_name,
-                            last_name : payload.last_name,
-                            username : payload.username,
-                            account_created : payload.account_created,
-                            account_updated : payload.account_updated
-        
-        
-                        });
-        
-                    }
-                )
+        if (user){
+            console.log("in user == null check",user);
+            const response = {
+                status : 400,
+                msg : "User Already exists"
             }
-        });
+
+            return response;
+        }
+
+        const newUser = new User(payload);
+
+        const resp = await newUser.save();
+        
+        const response = {
+            id : payload.id,
+            first_name : payload.first_name,
+            last_name : payload.last_name,
+            username : payload.username,
+            account_created : payload.account_created,
+            account_updated : payload.account_updated
+        }
+
+        return response;
+
+
+       
        
 
 
         
 
     },
-    getUserData :  (id,user, pass, callBackFunction) => {
+    getUserData :  async(id,user, pass, callBackFunction) => {
 
         try {
+
+            const user = await User.findOne({where : {id: id}})
+
+            if (user == null){
+                response = {
+                    status : 400
+                }
+            }
+
+
+            
+        } catch (error) {
+            
+        }
+
+        /*try {
             pool.query(`select * from `+config.get("database")+`.users where id =?`,[id], (err,result,fields) => {
 
                 
@@ -119,7 +124,7 @@ module.exports = {
           
 
             return callBackFunction(error);
-        }
+        } */
 
        
     },
