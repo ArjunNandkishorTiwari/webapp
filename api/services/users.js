@@ -59,73 +59,53 @@ module.exports = {
 
         try {
 
-            const user = await User.findOne({where : {id: id}})
+            const userFind = await User.findOne({where : {id: id}})
 
-            if (user == null){
-                response = {
+            if (userFind == null){
+                const response = {
                     status : 400
                 }
+                return response;
             }
+
+            const hash = comparePassword(pass,userFind.password);
+
+
+            if (hash == false){
+                const response = {
+                    status : 403
+                }
+                return response;
+            }
+
+            if (userFind.username != user || userFind.id != id) {
+                   
+                const response = {
+                    status : 403
+                }
+                return response;
+            }
+
+            const response = {
+                id : userFind.id,
+                first_name : userFind.first_name,
+                last_name : userFind.last_name,
+                username : userFind.username,
+                account_created : userFind.account_created,
+                account_updated : userFind.account_updated
+
+            }
+
+            return response
 
 
             
         } catch (error) {
+            console.log(error)
             
         }
 
-        /*try {
-            pool.query(`select * from `+config.get("database")+`.users where id =?`,[id], (err,result,fields) => {
-
-                
-                if (err){
-                    return callBackFunction(err);
-                }
-
-
-    
-                if (result.length == 0){
-                    
-                    return callBackFunction(null,result); 
-                }
-    
-                
-                
-               
-
-                const hash = comparePassword(pass,result[0].password);
-
-
-                if (hash == false){
-                    return callBackFunction(new Error("Authentication Failed"));
-                }
-
-                if (result[0].username != user || result[0].id != id) {
-                   
-                   
-                    return callBackFunction(new Error("Authentication Failed"));
-                }
-
-               
-    
-                return callBackFunction(null, {
-                    id : result[0].id,
-                    first_name : result[0].first_name,
-                    last_name : result[0].last_name,
-                    username : result[0].username,
-                    account_created : result[0].account_created,
-                    account_updated : result[0].account_updated
-                })
-    
-              
-            })
-    
-        } catch (error) {
-
-          
-
-            return callBackFunction(error);
-        } */
-
+       
        
     },
     updateUserRecord : async (payload,callBackFunction) => {
