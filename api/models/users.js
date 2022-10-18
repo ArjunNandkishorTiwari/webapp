@@ -71,11 +71,11 @@ const User = sequelize.define("users",{
         unique: true
     },
     account_created:{
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull:false
     },
     account_updated:{
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: false
 
     }

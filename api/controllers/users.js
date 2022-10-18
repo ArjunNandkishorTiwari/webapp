@@ -71,6 +71,8 @@ module.exports = {
     
             
         } catch (error) {
+
+            console.log(error)
             
         }
        
@@ -103,29 +105,14 @@ module.exports = {
             return res.status(200).json(response);
             
         } catch (error) {
+            console.log(error);
             
         }
 
 
        
 
-        // await getUserData(id, req.user, req.pass, (err, result)=>{
-        //     if (err){
-
-        //         res.status(403).json({"msg" : "not authorized"});
-        //         return;
-                
-        //     }
-           
-        //     if (result.length == 0){
-        //         res.status(500).json({"msg":"Data not found"});
-        //         return;
-        //     }
-            
-        //     
-
-
-        // })
+       
 
         
 
@@ -154,23 +141,21 @@ module.exports = {
         }
 
         
+    const result = await updateUserRecord(req);
 
-        await updateUserRecord(req, (err,result)=>{
-            if (err){
+    if (result.status == 403){
+        return res.status(403).json({"msg" : "Forbidden"});
 
-                res.status(403).json({"msg" : "Forbidden"});
-                return;
-                
-            }
-           
-            if (result.length == 0){
-                res.status(500).json({"msg":"Data not found"});
-                return;
-            }
-            
-            return res.status(204).send(result);
+    }
 
-        })
+    if (result.status == 400){
+        return res.status(400).json({"msg":"Data not found"});
+
+    }
+
+    return res.status(204).send();
+
+   
         
     }
 

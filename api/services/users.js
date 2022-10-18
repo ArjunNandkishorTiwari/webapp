@@ -59,7 +59,7 @@ module.exports = {
 
         try {
 
-            const userFind = await User.findOne({where : {id: id}})
+            const userFind = await User.findOne({where : {id: id}});
 
             if (userFind == null){
                 const response = {
@@ -108,79 +108,110 @@ module.exports = {
        
        
     },
-    updateUserRecord : async (payload,callBackFunction) => {
-
-        const id = payload.params.id;
-
-        pool.query(`select * from `+config.get("database")+`.users where id =?`,[id], (err,result,fields) => {
-            if (err){
-                return callBackFunction(err)
-            }
-            if (result.length == 0){
-                
-                return callBackFunction(null,result); 
-            }
-
-            const hash = comparePassword(payload.pass,result[0].password);
+    updateUserRecord : async (payload) => {
 
 
-                if (hash == false){
-                    return callBackFunction(new Error("Authentication Failed"));
+        try {
+
+            const id = payload.params.id;
+
+
+            const userUpdate = await User.findOne({where : {id: id}});
+    
+    
+            if (userUpdate == null){
+                const response = {
+                    status : 400
                 }
-
-                if (result[0].username != payload.user || result[0].id != id) {
+                return response;
+            }
+    
+            const hash = comparePassword(payload.pass,userUpdate.password);
+    
+    
+            if (hash == false){
+    
+                const response = {
+                    status : 403
+                }
+                return response;
+                }
+    
+            if (userUpdate.username != payload.user || userUpdate.id != id) {
+    
+                        
+                       
+                const response = {
+                    status : 403
+                }
+                return response;
+                }
+    
+    
+    
+                if (payload.body.first_name){
+    
+                    var first_name = payload.body.first_name;
                     
-                   
-                    return callBackFunction(new Error("Authentication Failed"));
+                    
+                }else{
+                    var first_name = userUpdate.first_name;
                 }
-            if (payload.body.first_name){
-
-                var first_name = payload.body.first_name;
-                
-                
-            }else{
-                var first_name = result[0].first_name;
-            }
-
-            if (payload.body.last_name){
-                var last_name = payload.body.last_name;
-                
-                
-            }else{
-                var last_name = result[0].last_name;
-            }
-
-            if (payload.body.password){
-                const salt = bcrypt.genSaltSync(10) ;
-
-                const hashedPassword = bcrypt.hashSync(payload.body.password,salt);
-                var password = hashedPassword;
-                
-                
-            }else{
-                var password = result[0].password;
-                
-            }
-            var update_time = new Date().toISOString();
-            pool.query(`update `+config.get("database")+`.users set first_name = ?, last_name = ?, password = ?, account_updated = ? where id = ?`,
-            [
-                first_name,
-                last_name,
-                password,
-                update_time,
-                id
-            ], (err,result)=> {
-
-                if (err){
-                    return callBackFunction(err)
+    
+                if (payload.body.last_name){
+                    var last_name = payload.body.last_name;
+                    
+                    
+                }else{
+                    var last_name = userUpdate.last_name;
                 }
-
-                return callBackFunction(null, {
-                    message : "Successful"
+    
+                if (payload.body.password){
+                    const salt = bcrypt.genSaltSync(10) ;
+    
+                    const hashedPassword = bcrypt.hashSync(payload.body.password,salt);
+                    var password = hashedPassword;
+                    
+                    
+                }else{
+                    var password = userUpdate.password;
+                    
+                }
+                var update_time = new Date().toISOString();
+    
+    
+                User.update({
+                    first_name : first_name,
+                    last_name : last_name,
+                    password : password,
+                    account_updated : update_time
+                    // updatedAt : update_time
+                    
+    
+                },{
+                    where: { username: userUpdate.username }
                 });
-            });
+    
+                const response = {
+                    status : 200
+                }
+    
+                return response;
+    
+             
+            
+        } catch (error) {
 
-        });
+            console.log(error);
+            
+        }
+
+         
+
+        
+
+
+       
 
     }
 }
