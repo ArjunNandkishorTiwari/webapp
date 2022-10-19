@@ -24,7 +24,7 @@ jobs:
 
       contents: read
 
-    name: AMI Creation
+    name: AMI Creation.
 
     steps:
 
