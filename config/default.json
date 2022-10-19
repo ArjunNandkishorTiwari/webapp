@@ -1,7 +1,7 @@
 {
-    "user" : "root",
+    "user" : "user",
     "host" : "localhost",
-    "password" : "root2412",
+    "password" : "user",
     "database" : "apidb",
     "port" : "3306",
     "dialect" : "mysql",
