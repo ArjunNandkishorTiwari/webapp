@@ -21,6 +21,7 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 4. Continuous Integration
 #### Assignment Requirements:
 
+
 1. All API request/response payloads should be in JSON.
 2. No UI should be implemented for the application.
 3. As a user, I expect all API calls to return with a proper HTTP status code.
