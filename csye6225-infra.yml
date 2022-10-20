@@ -137,7 +137,7 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet3
 
-  InstanceSecurityGroup:
+  InstanceSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: 
@@ -168,9 +168,9 @@ Resources:
       InstanceType: t2.micro
       DisableApiTermination: false
       ImageId: !Ref AmiID
-   #   KeyName: aws_mac
+      KeyName: aws_mac
       SecurityGroupIds: 
-        - !Ref InstanceSecurityGroup
+        - !Ref InstanceSecGroup
       SubnetId: !Ref PublicSubnet1
       BlockDeviceMappings:
         - DeviceName: /dev/sdc
