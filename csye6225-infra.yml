@@ -168,7 +168,7 @@ Resources:
       InstanceType: t2.micro
       DisableApiTermination: false
       ImageId: !Ref AmiID
-      KeyName: aws_mac
+      #KeyName: aws_mac
       SecurityGroupIds: 
         - !Ref InstanceSecGroup
       SubnetId: !Ref PublicSubnet1
