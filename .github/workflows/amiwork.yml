@@ -53,6 +53,7 @@ jobs:
       - name: Start AMI
 
         uses: hashicorp/packer-github-actions@master
+        if: ${{ always() }}
         with:
           command: build
           arguments: "-color=false -on-error=abort"
