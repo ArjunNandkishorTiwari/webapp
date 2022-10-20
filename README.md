@@ -20,9 +20,9 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 #### Assignment Requirements:
 
 
-1. All API request/response payloads should be in JSON.
-2. No UI should be implemented for the application.
-3. As a user, I expect all API calls to return with a proper HTTP status code.
+1. Building Custom Application AMI using Packer
+2. Continuous Integration: Add New GitHub Actions Workflow for Web App
+3. Infrastructure as Code w/ CloudFormation
 4. As a user, I expect the code quality of the application is maintained to the highest standards using the unit and/or integration tests.
 5. AMI Building should be triggered after pull request with github workflow
    
