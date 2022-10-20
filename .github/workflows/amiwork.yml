@@ -1,0 +1,62 @@
+name: AWS AMI using Packer Config
+
+
+
+on:
+
+  pull_request:
+
+    branches: [ main ]
+
+  workflow_dispatch:
+
+
+
+jobs:
+
+  packer:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+
+      id-token: write
+
+      contents: read
+
+    name: AMI Creation.
+
+    steps:
+
+      - name: Check Repository
+
+        uses: actions/checkout@v2
+
+
+      - name: Validate PAcker Template
+
+        working-directory: ./
+
+        run: packer validate amiFinal.pkr.hcl
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ aws.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ aws.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Start AMI
+
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort"
+          target: amiFinal.pkr.hcl
+          working_directory: ./
+        env:
+          aws-access-key-id: ${{ aws.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ aws.AWS_SECRET_ACCESS_KEY }}
+
+
+        
