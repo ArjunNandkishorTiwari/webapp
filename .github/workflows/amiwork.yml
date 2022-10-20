@@ -39,7 +39,6 @@ jobs:
 
       - name: Validate PAcker Template
 
-        working-directory: .
 
         run: packer validate amiFinal.pkr.hcl
 
