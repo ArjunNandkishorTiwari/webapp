@@ -1,7 +1,5 @@
 # webapp
 
-
-
 ## Assignment - 4
 
 #### Name :- Arjun Nandkishor Tiwari
@@ -10,8 +8,6 @@
 #### E-mail: tiwari.ar@northeastern.edu 
 
 Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under prof. Tejas Parekh.
-
-
 
  
 #### Prerequisites:
@@ -30,7 +26,6 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 4. As a user, I expect the code quality of the application is maintained to the highest standards using the unit and/or integration tests.
 5. AMI Building should be triggered after pull request with github workflow
    
-
 
 ##### Important Instructions and Commands
 
