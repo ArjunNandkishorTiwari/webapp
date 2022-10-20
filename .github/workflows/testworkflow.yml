@@ -48,3 +48,9 @@ jobs:
       - run: npm run build --if-present
 
       - run: npm test
+
+
+      - name: Validate PAcker Template
+
+
+        run: packer validate amiFinal.pkr.hcl

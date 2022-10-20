@@ -37,11 +37,7 @@ jobs:
         uses: actions/checkout@v2
 
 
-      - name: Validate PAcker Template
-
-
-        run: packer validate amiFinal.pkr.hcl
-
+      
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
