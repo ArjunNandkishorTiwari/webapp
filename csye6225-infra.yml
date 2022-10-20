@@ -166,12 +166,18 @@ Resources:
     Type: AWS::EC2::Instance
     Properties: 
       InstanceType: t2.micro
-      DisableApiTermination: false
+      DisableApiTermination: true
       ImageId: !Ref AmiID
       KeyName: aws_mac
       SecurityGroupIds: 
         - !Ref InstanceSecurityGroup
       SubnetId: !Ref PublicSubnet1
+      BlockDeviceMappings:
+        - DeviceName: /dev/sdc
+          Ebs:
+            VolumeSize: 50
+            VolumeType: gp2
+            DeleteOnTermination: true
   
 
 Outputs:
