@@ -1,20 +1,22 @@
 
-const {createPool} = require("mysql");
+//const {createPool} = require("mysql");
 const config = require("config");
 const bcrypt = require("bcryptjs");
 const {comparePassword} = require("../helper/helper");
-const User = require("../models/users");
+const db = require("../middleware/db");
 
-const pool = createPool({
-    host : config.get("host"),
-    user : config.get("user"),
-    password : config.get("password"),
-    connectionLimit : 10
+const User = db.models.User;
+
+// const pool = createPool({
+//     host : config.get("host"),
+//     user : config.get("user"),
+//     password : config.get("password"),
+//     connectionLimit : 10
     
 
 
 
-});
+// });
 
 
 module.exports = {

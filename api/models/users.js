@@ -1,38 +1,40 @@
-const config = require("config");
+// const config = require("config");
 
-const {Sequelize, DataTypes} = require("sequelize");
+//const { sequelize, Sequelize } = require("../middleware/db")
+
+// const {Sequelize, DataTypes} = require("sequelize");
 
 
-const sequelize = new Sequelize(
-    config.get("database"),
-    config.get("user"),
-    config.get("password"), {
-        host: config.get("host"),
-        dialect: config.get("dialect"),
-        operatorsAliases: false,
-        port: config.get("port")
-    }
-);
+// const sequelize = new Sequelize(
+//     config.get("database"),
+//     config.get("user"),
+//     config.get("password"), {
+//         host: config.get("host"),
+//         dialect: config.get("dialect"),
+//         operatorsAliases: false,
+//         port: config.get("port")
+//     }
+// );
 
-const connectionDB = async() => {
-    try {
+// const connectionDB = async() => {
+//     try {
 
-        sequelize.authenticate().then(()=>{
-            console.log("Database connection Successful");
+//         sequelize.authenticate().then(()=>{
+//             console.log("Database connection Successful");
 
-        }).catch(err=>{
-            console.log("Database Connection Failed",err);
-        });
+//         }).catch(err=>{
+//             console.log("Database Connection Failed",err);
+//         });
         
-    } catch (error) {
+//     } catch (error) {
 
-        console.log("Error in connecting to the database :-  ",error)
+//         console.log("Error in connecting to the database :-  ",error)
         
-    }
-}
+//     }
+// }
 
 
-connectionDB();
+// connectionDB();
 
 
 // const db = {}
@@ -43,6 +45,8 @@ connectionDB();
 // db.users = require("./users")(sequelize,DataTypes);
 
 // db.sequelize.sync({})
+
+module.exports = (sequelize, Sequelize) => {
 
 const User = sequelize.define("users",{
 
@@ -82,8 +86,14 @@ const User = sequelize.define("users",{
 
 },{
     freezeTableName: true
-  })
+  });
 
-sequelize.sync({force:false});
+  return User;
 
-module.exports =  User;
+
+
+};
+
+// sequelize.sync({force:false});
+
+// module.exports =  User;
