@@ -26,6 +26,12 @@ db.connectionDB = async() => {
         }).catch(err=>{
             console.log("Database Connection Failed",err);
         });
+
+        sequelize.sync({force:false}).then(()=>{      //if the database is not present it will be created
+            console.log("Sync Successful");
+        }).catch(err=>{
+            console.log("Sync Failed",err);
+        });
         
     } catch (error) {
 
@@ -41,7 +47,8 @@ db.connectionDB = async() => {
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.models  = {};
-db.models.User = require("../models/users")(sequelize,Sequelize)
+db.models.User = require("../models/users")(sequelize,Sequelize);
+db.models.Document = require("../models/documents")(sequelize,Sequelize);
 
 
 module.exports = db;
