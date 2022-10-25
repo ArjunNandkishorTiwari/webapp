@@ -5,6 +5,7 @@ const { getAllDocuments, uploadDocument, getDocumentById, deleteDocument} = requ
 
 
 
+
 router.route("/").get(auth, getAllDocuments);
 router.route("/").post(auth, uploadDocument);
 router.route("/:id").get(auth, getDocumentById);
