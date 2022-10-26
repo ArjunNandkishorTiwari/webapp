@@ -1,10 +1,15 @@
 Description:  This template deploys a VPC.
 
 Parameters:
+  S3BucketName:
+    Description: Please enter unique bucket name
+    Type: String
+    Default: ""
+
   AmiID:
     Description: Please enter the AMI ID 
     Type: String
-    Default: "ami-0d39e1cf2da257467"
+    Default: ""
     
   VpcCIDR:
     Description: Please enter the IP range
@@ -255,11 +260,16 @@ Resources:
   
   Ec2Instance: 
     Type: AWS::EC2::Instance
+    DependsOn:
+      - RDSInstance
+      - S3Bucket
+      - S3BucketIAMInstance
+
     Properties: 
       InstanceType: t2.micro
       DisableApiTermination: false
       ImageId: !Ref AmiID
-      #KeyName: aws_mac
+      KeyName: aws_mac
       SecurityGroupIds: 
         - !Ref application
       SubnetId: !Ref PublicSubnet1
@@ -269,6 +279,7 @@ Resources:
             VolumeSize: 8
             VolumeType: gp2
             DeleteOnTermination: true
+      IamInstanceProfile: !Ref S3BucketIAMInstance
 
   RDSParameterGroup:
     Type: 'AWS::RDS::DBParameterGroup'
@@ -304,6 +315,75 @@ Resources:
       DBParameterGroupName : !Ref RDSParameterGroup
       PubliclyAccessible : false
       DBSubnetGroupName : !Ref RDSPrivateSubnetGroup
+
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ChangingStorageClassFromStandardToStandardIA
+            Transitions: 
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
+            Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+
+  EC2CSYE6225Role:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: 
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      RoleName: EC2-CSYE6225
+      Policies:
+        - PolicyName: WebAppS3
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                 - s3:GetObject
+                 - s3:PutObject
+                 - s3:DeleteObject
+                Resource:
+                  - !Join ["", ["arn:aws:s3:::", !Ref S3Bucket]]
+                  - !Join ["", ["arn:aws:s3:::", !Ref S3Bucket, "/*"]]
+
+
+  S3BucketIAMInstance:
+    Type: AWS::IAM::InstanceProfile
+    DependsOn: EC2CSYE6225Role
+    Properties: 
+
+      InstanceProfileName: S3BucketIAMInstanceProfileName
+      Path: /
+      Roles:
+        - !Ref EC2CSYE6225Role
+
+
+
+
+
+     
+
+
+  
 
 
 
