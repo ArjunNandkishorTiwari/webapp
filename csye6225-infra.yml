@@ -4,7 +4,7 @@ Parameters:
   AmiID:
     Description: Please enter the AMI ID 
     Type: String
-    Default: " "
+    Default: "ami-0d39e1cf2da257467"
     
   VpcCIDR:
     Description: Please enter the IP range
@@ -68,6 +68,41 @@ Resources:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref VPC
 
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Select [ 3, !Cidr [ !GetAtt VPC.CidrBlock, 4, 8 ]]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName    
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: !Select [ 4, !Cidr [ !GetAtt VPC.CidrBlock, 5, 8 ]]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
+  PrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 2, !GetAZs '' ]
+      CidrBlock: !Select [ 5, !Cidr [ !GetAtt VPC.CidrBlock, 6, 8 ]]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
+  
+
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -101,7 +136,13 @@ Resources:
         - Key: Name
           Value: !Ref AWS::StackName
 
-
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -137,7 +178,28 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet3
 
-  InstanceSecGroup:
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref PrivateSubnet1
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref PrivateSubnet2
+
+  PrivateSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref PrivateSubnet3
+
+
+
+  application:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: 
@@ -151,7 +213,6 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
@@ -159,7 +220,37 @@ Resources:
         - IpProtocol: tcp
           FromPort: 9000
           ToPort: 9000
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
           CidrIp: 0.0.0.0/0
+        - IpProtocol: -1
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: -1
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: -1
+          FromPort: 9000
+          ToPort: 9000
+          CidrIp: 0.0.0.0/0   
+
+
+  database:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: 
+        Ref: VPC
+      GroupDescription: Allow http to client host
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref application
+          
 
   
   Ec2Instance: 
@@ -170,14 +261,53 @@ Resources:
       ImageId: !Ref AmiID
       #KeyName: aws_mac
       SecurityGroupIds: 
-        - !Ref InstanceSecGroup
+        - !Ref application
       SubnetId: !Ref PublicSubnet1
       BlockDeviceMappings:
         - DeviceName: /dev/sdc
           Ebs:
-            VolumeSize: 50
+            VolumeSize: 8
             VolumeType: gp2
             DeleteOnTermination: true
+
+  RDSParameterGroup:
+    Type: 'AWS::RDS::DBParameterGroup'
+    Properties:
+      Description:  MySQL Parameter Group
+      Family: mysql8.0
+      Parameters:
+        sql_mode: IGNORE_SPACE
+
+  RDSPrivateSubnetGroup:
+    Type : AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Sub RDS Subnet Group
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+        - !Ref PrivateSubnet3
+
+
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier : csye6225
+      DBInstanceClass : db.t2.micro
+      DBName : "apidb"
+      Engine : MySql
+      EngineVersion : 8.0.27
+      AllocatedStorage : 8
+      MultiAZ : false
+      MasterUsername : csye6225
+      MasterUserPassword : csye6225
+      VPCSecurityGroups : [!Ref database]
+      DBParameterGroupName : !Ref RDSParameterGroup
+      PubliclyAccessible : false
+      DBSubnetGroupName : !Ref RDSPrivateSubnetGroup
+
+
+
+  
   
 
 Outputs:
