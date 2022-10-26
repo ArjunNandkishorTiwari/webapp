@@ -1,20 +1,22 @@
 
-const {createPool} = require("mysql");
+//const {createPool} = require("mysql");
 const config = require("config");
 const bcrypt = require("bcryptjs");
 const {comparePassword} = require("../helper/helper");
-const User = require("../models/users");
+const db = require("../middleware/db");
 
-const pool = createPool({
-    host : config.get("host"),
-    user : config.get("user"),
-    password : config.get("password"),
-    connectionLimit : 10
+const User = db.models.User;
+
+// const pool = createPool({
+//     host : config.get("host"),
+//     user : config.get("user"),
+//     password : config.get("password"),
+//     connectionLimit : 10
     
 
 
 
-});
+// });
 
 
 module.exports = {
@@ -67,6 +69,8 @@ module.exports = {
                 }
                 return response;
             }
+
+            console.log("user Data", userFind);
 
             const hash = comparePassword(pass,userFind.password);
 
@@ -212,6 +216,59 @@ module.exports = {
 
 
        
+
+    },
+    getUserByUserName: async(user, pass) => {
+
+        try {
+            const userFind = await User.findOne({where : {username: user}});
+
+            if (userFind == null){
+                const response = {
+                    status : 400
+                }
+                return response;
+            }
+
+            console.log("user Data", userFind);
+
+            const hash = comparePassword(pass,userFind.password);
+
+
+            if (hash == false){
+                const response = {
+                    status : 403
+                }
+                return response;
+            }
+
+            if (userFind.username != user) {
+                   
+                const response = {
+                    status : 403
+                }
+                return response;
+            }
+
+            const response = {
+                id : userFind.id,
+                first_name : userFind.first_name,
+                last_name : userFind.last_name,
+                username : userFind.username,
+                account_created : userFind.account_created,
+                account_updated : userFind.account_updated
+
+            }
+
+            return response;
+
+            
+        } catch (error) {
+            console.log(error);
+            
+        }
+
+
 
     }
 }
