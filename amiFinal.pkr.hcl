@@ -35,7 +35,7 @@ variable "secret_key" {
 
 
 
-source "amazon-ebs" "my-ami" {
+sour "amazon-ebs" "my-ami" {
   // access_key = "${var.access_key}"
   // secret_key = "${var.secret_key}"
   region          = "${var.region}"
@@ -45,35 +45,35 @@ source "amazon-ebs" "my-ami" {
   ami_regions = [
     "us-east-1",
   ]
-  aws_polling {
+  aws_polli {
     delay_seconds = 120
     max_attempts  = 50
   }
 
-  instance_type = "t2.micro"
+  instance_t = "t2.micro"
   source_ami    = "${var.source_ami}"
-  ssh_username  = "${var.ssh_username}"
+  ssrname  = "${var.ssh_username}"
   
-  launch_block_device_mappings {
+  launch_block_de_mappings {
     delete_on_termination = true
-    device_name           = "/dev/sda1"
-    volume_size           = 50
-    volume_type           = "gp2"
+    devi           = "/dev/sda1"
+    volume           = 50
+    volu          = "gp2"
   }
 }
 
 build {
-  sources = ["source.amazon-ebs.my-ami"]
+  sources = ["source.amazonmy-ami"]
 
 
 
   provisioner "file" {
-    source = "./webapp.zip"
+    source = "./webap.zip"
     destination= "~/"
 }
 
   provisioner "shell" {
-    script = "./veryfinal.sh"
+    sipt = "./veral.sh"
   }
 
 
