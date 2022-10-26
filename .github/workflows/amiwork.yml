@@ -42,10 +42,6 @@ jobs:
           zip -r webapp.zip ./
           pwd ./webapp
 
-      - name: Validate PAcker Template
-
-
-        run: packer validate amiFinal.pkr.hcl
 
       
       - name: Configure AWS Credentials

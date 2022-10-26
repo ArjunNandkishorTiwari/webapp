@@ -49,6 +49,11 @@ jobs:
 
       - run: npm test
 
+      - name: Zip all the webapp imp files
+        run: |
+          zip -r webapp.zip ./
+          pwd ./webapp
+
 
       - name: Validate PAcker Template
 
