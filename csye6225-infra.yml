@@ -1,6 +1,20 @@
 Description:  This template deploys a VPC.
 
 Parameters:
+  DatabaseUser:
+    Description: Please enter Database name
+    Type: String
+    Default: ""
+
+  DatabasePassword:
+    Description: Please enter Database password
+    Type: String
+    Default: ""
+
+  DatabaseName:
+    Description: Please enter Database Name
+    Type: String
+    Default: ""
   S3BucketName:
     Description: Please enter unique bucket name
     Type: String
@@ -280,6 +294,24 @@ Resources:
             VolumeType: gp2
             DeleteOnTermination: true
       IamInstanceProfile: !Ref S3BucketIAMInstance
+      UserData:
+      Fn::Base64
+        !Sub |
+        #!/bin/bash
+        DB_HOST=${RDSInstance.Endpoint.Address}
+        DB_USER=${DatabaseUser}
+        AWS_BUCKET=${S3Bucket}
+        DB_NAME=${DatabaseName}
+        DB_PASSWORD=${DatabasePassword}
+        echo "Done with setting environment variables"
+        sudo apt-get update -y
+        cd home/ubuntu/webapp/webapp
+        sudo npm install
+        sudo pm2 start app.js
+        sudo pm2 startup systemd
+        sudo pm2 save
+        sudo pm2 list
+        sudo pm2 status
 
   RDSParameterGroup:
     Type: 'AWS::RDS::DBParameterGroup'
@@ -304,13 +336,13 @@ Resources:
     Properties:
       DBInstanceIdentifier : csye6225
       DBInstanceClass : db.t2.micro
-      DBName : "apidb"
+      DBName : !Ref DatabaseName #########
       Engine : MySql
       EngineVersion : 8.0.27
       AllocatedStorage : 8
       MultiAZ : false
-      MasterUsername : csye6225
-      MasterUserPassword : csye6225
+      MasterUsername : !Ref DatabaseUser #######
+      MasterUserPassword : !Ref DatabasePassword #########
       VPCSecurityGroups : [!Ref database]
       DBParameterGroupName : !Ref RDSParameterGroup
       PubliclyAccessible : false

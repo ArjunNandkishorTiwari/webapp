@@ -21,7 +21,7 @@ aws.config.update({
 
 });
 
-const bucket = process.env.BUCKET;
+const bucket = process.env.AWS_BUCKET;
 
 const S3 = new aws.S3();
 
