@@ -351,6 +351,7 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
+      AccessControl: Private
       BucketName: !Ref S3BucketName
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true

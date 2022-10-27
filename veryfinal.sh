@@ -56,4 +56,4 @@ sudo apt-get -y install nodejs
 sudo apt-get install zip unzip
 sudo unzip webapp.zip -d webapp
 sudo npm i -g pm2
-sudo apt-get -y install mysql
+#sudo apt-get -y install mysql
