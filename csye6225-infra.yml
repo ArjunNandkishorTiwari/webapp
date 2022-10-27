@@ -296,13 +296,15 @@ Resources:
           !Sub |
           #!/bin/bash
 
-          echo export DB_HOST=${RDSInstance.Endpoint.Address} >> /etc/profile
-          echo export DB_USER=${DatabaseUser} >> /etc/profile
-          echo export AWS_BUCKET=${S3Bucket} >> /etc/profile
-          echo export DB_NAME=${DatabaseName} >> /etc/profile
-          echo export DB_PASSWORD=${DatabasePassword} >> /etc/profile
+            export DB_HOST=${RDSInstance.Endpoint.Address}
+            export DB_USER=${DatabaseUser}
+            export AWS_BUCKET=${S3Bucket}
+            export DB_NAME=${DatabaseName}
+            export DB_PASSWORD=${DatabasePassword}
+          source /etc/profile
           echo "Done with setting environment variables"
-          
+          sudo apt-get update -y
+          sudo pm2 reload all --update-env
           
 
 
