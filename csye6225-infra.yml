@@ -179,6 +179,13 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
 
+
+  # DefaultPrivateRoute:
+  #   Type: AWS::EC2::Route
+  #   DependsOn: InternetGatewayAttachment
+  #   Properties:
+  #     RouteTableId: !Ref PrivateRouteTable
+
   PublicSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -218,7 +225,7 @@ Resources:
 
 
 
-  application:
+  InstanceSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: 
@@ -232,6 +239,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
@@ -239,23 +247,9 @@ Resources:
         - IpProtocol: tcp
           FromPort: 9000
           ToPort: 9000
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          FromPort: 0
-          ToPort: 0
           CidrIp: 0.0.0.0/0
-        - IpProtocol: -1
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: -1
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: -1
-          FromPort: 9000
-          ToPort: 9000
-          CidrIp: 0.0.0.0/0   
+
+
 
 
   database:
@@ -268,7 +262,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupId: !Ref application
+          SourceSecurityGroupId: 
+            Fn::GetAtt:
+              - InstanceSecGroup
+              - GroupId
           
 
   
@@ -285,7 +282,7 @@ Resources:
       ImageId: !Ref AmiID
       KeyName: aws_mac
       SecurityGroupIds: 
-        - !Ref application
+        - !Ref InstanceSecGroup
       SubnetId: !Ref PublicSubnet1
       BlockDeviceMappings:
         - DeviceName: /dev/sdc
@@ -295,23 +292,18 @@ Resources:
             DeleteOnTermination: true
       IamInstanceProfile: !Ref S3BucketIAMInstance
       UserData:
-      Fn::Base64
-        !Sub |
-        #!/bin/bash
-        DB_HOST=${RDSInstance.Endpoint.Address}
-        DB_USER=${DatabaseUser}
-        AWS_BUCKET=${S3Bucket}
-        DB_NAME=${DatabaseName}
-        DB_PASSWORD=${DatabasePassword}
-        echo "Done with setting environment variables"
-        sudo apt-get update -y
-        cd home/ubuntu/webapp/webapp
-        sudo npm install
-        sudo pm2 start app.js
-        sudo pm2 startup systemd
-        sudo pm2 save
-        sudo pm2 list
-        sudo pm2 status
+        Fn::Base64:
+          !Sub |
+          #!/bin/bash
+          DB_HOST=${RDSInstance.Endpoint.Address}
+          DB_USER=${DatabaseUser}
+          AWS_BUCKET=${S3Bucket}
+          DB_NAME=${DatabaseName}
+          DB_PASSWORD=${DatabasePassword}
+          echo "Done with setting environment variables"
+          sudo apt-get update -y
+          
+
 
   RDSParameterGroup:
     Type: 'AWS::RDS::DBParameterGroup'
@@ -334,7 +326,7 @@ Resources:
   RDSInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier : csye6225
+      DBInstanceIdentifier : csye62252
       DBInstanceClass : db.t2.micro
       DBName : !Ref DatabaseName #########
       Engine : MySql
@@ -355,6 +347,7 @@ Resources:
       BucketName: !Ref S3BucketName
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
+        BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
       LifecycleConfiguration:
@@ -364,6 +357,7 @@ Resources:
               - StorageClass: STANDARD_IA
                 TransitionInDays: 30
             Status: Enabled
+            ExpirationInDays: 90
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
