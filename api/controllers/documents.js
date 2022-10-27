@@ -70,6 +70,7 @@ module.exports = {
         Result(req,res, async function(err) {
 
             if (err){
+                
                 return res.status(400).json({"msg" : "Error uploading file"});
             }
 
