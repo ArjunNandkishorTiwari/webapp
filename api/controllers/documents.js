@@ -11,6 +11,10 @@ module.exports = {
 
     getAllDocuments : async(req,res) => {
 
+
+        try {
+
+
         const reqUser = req.user;
         const reqPass = req.pass;
 
@@ -43,23 +47,23 @@ module.exports = {
 
 
         return res.status(200).json(result);
+            
+        } catch (error) {
+
+            console.log(error);
+            
+        }
+
     },
 
     uploadDocument: async(req,res) => {
 
-        // const file = req.file;
 
-        // console.log("file",file);
 
-    //     const UserData = getUserByUserName(req.user, req.pass);
 
-    //     if (UserData.status == 400){
-    //         return res.status(400).json({"msg":"user not found"});
-    //    }
+    try {
 
-    //     if (UserData.status == 403){
-    //         return res.status(403).json({"msg" : "not authorized"});
-    //     }
+
 
         await setUniqueName();
 
@@ -95,44 +99,60 @@ module.exports = {
             
         })
 
-        //console.log("flogal file path",globalFilePath);
+  
+        
+    } catch (error) {
 
-        //console.log(result);
+        console.log(error);
+        
+    }
 
-
-      //  return res.status(201).json({msg: "POST New Document"});
     },
 
     getDocumentById: async(req,res) => {
 
-        const doc_ID = req.params.id;
-        const reqUser = req.user;
-        const reqPass = req.pass;
+        try {
+
+            const doc_ID = req.params.id;
+            const reqUser = req.user;
+            const reqPass = req.pass;
+    
+    
+            const response = await getDocumentDataById(doc_ID, reqUser, reqPass);
+    
+            if (response.status == 400){
+                return res.status(400).json({"msg":"Document not found"});
+           }
+    
+            if (response.status == 403){
+                return res.status(403).json({"msg" : "not authorized"});
+            }
+    
+            if (response.status == 401){
+                return res.status(401).json({"msg" : "Document not found"});
+            }
+    
+    
+    
+            console.log("response",response);
+    
+    
+            return res.status(200).json(response);
+    
 
 
-        const response = await getDocumentDataById(doc_ID, reqUser, reqPass);
-
-        if (response.status == 400){
-            return res.status(400).json({"msg":"Document not found"});
-       }
-
-        if (response.status == 403){
-            return res.status(403).json({"msg" : "not authorized"});
+            
+        } catch (error) {
+            console.log(error);
         }
 
-        if (response.status == 401){
-            return res.status(401).json({"msg" : "Document not found"});
-        }
-
-
-
-        console.log("response",response);
-
-
-        return res.status(200).json(response);
     },
 
     deleteDocument: async(req,res) => {
+
+
+        try {
+
 
         const doc_ID = req.params.id;
         const reqUser = req.user;
@@ -154,5 +174,12 @@ module.exports = {
         }
 
         return res.status(204).json({msg: "DELETE Document by ID"});
+            
+        } catch (error) {
+
+            console.log(error);
+            
+        }
+
     }
 }
