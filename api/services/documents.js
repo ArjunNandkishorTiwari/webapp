@@ -52,7 +52,7 @@ module.exports = {
     upload : multer({
         storage: multerS3({
             s3: S3,
-            acl: "public-read",
+            ACL: "public-read",
             bucket: bucket,
             key: ( req, file, cb) => {
                 console.log("File",file);
