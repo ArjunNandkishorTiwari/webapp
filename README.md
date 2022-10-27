@@ -77,7 +77,7 @@ export AWS_DEFAULT_PROFILE = dev
 
 
 
-aws --region us-east-1 --profile dev cloudformation create-stack --stack-name arjunVPC1 --template-body file://csye6225-infra.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=VpcCIDR,ParameterValue="10.192.0.0/16" ParameterKey=PublicSubnet1CIDR,ParameterValue="10.192.10.0/24" ParameterKey=PublicSubnet2CIDR,ParameterValue="10.192.11.0/24" ParameterKey=PublicSubnet3CIDR,ParameterValue="10.192.25.0/24" ParameterKey=AZ1,ParameterValue=0 ParameterKey=AZ2,ParameterValue=1 ParameterKey=AZ3,ParameterValue=001 ParameterKey=AmiID,ParameterValue="ami-0555e0f5ce2575471" ParameterKey=S3BucketName,ParameterValue="arjundevbucket4" ParameterKey=DatabaseUser,ParameterValue="csye62252" ParameterKey=DatabasePassword,ParameterValue="csye62252" ParameterKey=DatabaseName,ParameterValue="csye62252"
+aws --region us-east-1 --profile dev cloudformation create-stack --stack-name arjunVPC2 --template-body file://csye6225-infra.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=VpcCIDR,ParameterValue="10.192.0.0/16" ParameterKey=PublicSubnet1CIDR,ParameterValue="10.192.10.0/24" ParameterKey=PublicSubnet2CIDR,ParameterValue="10.192.11.0/24" ParameterKey=PublicSubnet3CIDR,ParameterValue="10.192.25.0/24" ParameterKey=AZ1,ParameterValue=0 ParameterKey=AZ2,ParameterValue=1 ParameterKey=AZ3,ParameterValue=001 ParameterKey=AmiID,ParameterValue="ami-0555e0f5ce2575471" ParameterKey=S3BucketName,ParameterValue="arjundevbucket4" ParameterKey=DatabaseUser,ParameterValue="csye6225" ParameterKey=DatabasePassword,ParameterValue="csye6225" ParameterKey=DatabaseName,ParameterValue="csye6225"
 
 
 cd home/ubuntu/webapp/webapp
