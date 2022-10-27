@@ -11,17 +11,18 @@ const Document = db.models.Document;
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const {comparePassword} = require("../helper/helper");
+const path = require("path");
 
 var uniqueFileName = "";
 
 
 
-aws.config.update({
-    awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    region: process.env.REGION,
+// aws.config.update({
+//     awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//     awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//     region: process.env.REGION,
 
-});
+// });
 
 const bucket = process.env.AWS_BUCKET;
 
@@ -54,8 +55,8 @@ module.exports = {
             acl: "public-read",
             bucket: bucket,
             key: ( req, file, cb) => {
-                //console.log(file);
-                cb(null, uniqueFileName) //file.originalname
+                console.log("File",file);
+                cb(null, uniqueFileName+path.extname(file.originalname)) //file.originalname
     
             }
            
@@ -67,7 +68,7 @@ module.exports = {
         console.log(req.file);
 
         const Obj = {
-            filename : uniqueFileName,
+            filename : uniqueFileName+path.extname(req.file.originalname),
             location : req.file.location
 
         }

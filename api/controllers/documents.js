@@ -47,9 +47,9 @@ module.exports = {
 
     uploadDocument: async(req,res) => {
 
-        const file = req.file;
+        // const file = req.file;
 
-        console.log("file",file);
+        // console.log("file",file);
 
     //     const UserData = getUserByUserName(req.user, req.pass);
 
@@ -70,12 +70,14 @@ module.exports = {
         Result(req,res, async function(err) {
 
             if (err){
-                
+                console.log(err);
                 return res.status(400).json({"msg" : "Error uploading file"});
             }
 
 
             const fileData = await uploadMiddleware(req,res);
+
+            console.log("!!!!!!!!",fileData)
 
             const response = await documentToData(req,fileData);
 
