@@ -72,9 +72,9 @@ build {
     destination= "~/"
 }
 
-  // provisioner "shell" {
-  //   script = "./veryfinal.sh"
-  // }
+  provisioner "shell" {
+    script = "./veryfinal.sh"
+  }
 
 
 
