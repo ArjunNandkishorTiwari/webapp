@@ -11,9 +11,8 @@ sudo unzip webapp.zip -d webapp
 sudo npm i -g pm2
 
 
+cd /home/ubuntu/webapp
 
-cd webapp
-cd webapp
 
 
 echo "Install node modules"
