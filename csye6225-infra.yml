@@ -295,13 +295,18 @@ Resources:
         Fn::Base64:
           !Sub |
           #!/bin/bash
-          DB_HOST=${RDSInstance.Endpoint.Address}
-          DB_USER=${DatabaseUser}
-          AWS_BUCKET=${S3Bucket}
-          DB_NAME=${DatabaseName}
-          DB_PASSWORD=${DatabasePassword}
+          cat > /etc/environment << 'EOF'
+
+            export DB_HOST=${RDSInstance.Endpoint.Address}
+            export DB_USER=${DatabaseUser}
+            export AWS_BUCKET=${S3Bucket}
+            export DB_NAME=${DatabaseName}
+            export DB_PASSWORD=${DatabasePassword}
+          EOF
+          source /etc/profile
           echo "Done with setting environment variables"
           sudo apt-get update -y
+          sudo pm2 reload all --update-env
           
 
 
@@ -326,7 +331,7 @@ Resources:
   RDSInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier : csye62252
+      DBInstanceIdentifier : csye6225
       DBInstanceClass : db.t2.micro
       DBName : !Ref DatabaseName #########
       Engine : MySql
