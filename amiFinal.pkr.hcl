@@ -41,7 +41,7 @@ source "amazon-ebs" "my-ami" {
   region          = "${var.region}"
   ami_name        = "AMI_{{timestamp}}"
   ami_description = "Assignment 4"
-  ami_users = ["872062323383"]
+  ami_users = ["116759853696"]
   ami_regions = [
     "us-east-1",
   ]
