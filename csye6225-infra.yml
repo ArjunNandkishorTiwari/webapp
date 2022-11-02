@@ -1,6 +1,10 @@
 Description:  This template deploys a VPC.
 
 Parameters:
+  DNSDomain:
+    Description: Please enter the domain
+    Type: String
+    Default: ""
   DatabaseUser:
     Description: Please enter Database name
     Type: String
@@ -420,8 +424,8 @@ Resources:
   DNSHost:
     Type: AWS::Route53::RecordSet
     Properties:
-      HostedZoneName: prod.arjuntiwari.me.
-      Name: prod.arjuntiwari.me.
+      HostedZoneName: !Ref DNSDomain #prod.arjuntiwari.me.
+      Name: !Ref DNSDomain #prod.arjuntiwari.me.
       Type: A
       TTL: 900
       ResourceRecords:

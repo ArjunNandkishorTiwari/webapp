@@ -65,7 +65,7 @@ module.exports = {
 
 
 
-        await setUniqueName();
+        await setUniqueName(req.user);
 
 
         const Result = await upload.single("file");

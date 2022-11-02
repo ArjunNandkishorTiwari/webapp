@@ -45,7 +45,8 @@ const S3 = new aws.S3();
 
 module.exports = {
     setUniqueName : (user) => {
-        uniqueFileName = crypto.randomBytes(16).toString("hex");
+        //uniqueFileName = crypto.randomBytes(16).toString("hex");
+        uniqueFileName = user;
 
 
     },
@@ -55,8 +56,9 @@ module.exports = {
             ACL: "public-read",
             bucket: bucket,
             key: ( req, file, cb) => {
+                console.log(req.user);
                 console.log("File",file);
-                cb(null, uniqueFileName+path.extname(file.originalname)) //file.originalname
+                cb(null, uniqueFileName+'-'+path.basename(file.originalname)) //file.originalname
     
             }
            
@@ -68,7 +70,7 @@ module.exports = {
         console.log(req.file);
 
         const Obj = {
-            filename : uniqueFileName+path.extname(req.file.originalname),
+            filename : uniqueFileName+'-'+path.basename(req.file.originalname), //path.extname
             location : req.file.location
 
         }
