@@ -307,6 +307,7 @@ Resources:
           echo "Done with setting environment variables"
           sudo apt-get update -y
           sudo pm2 reload all --update-env
+          sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
           cd /home/ubuntu/webapp
           sudo pm2 start app.js
           sudo pm2 startup systemd
