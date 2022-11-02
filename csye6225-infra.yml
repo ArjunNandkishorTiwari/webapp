@@ -416,6 +416,17 @@ Resources:
         - !Ref EC2CSYE6225Role
 
 
+  DNSHost:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: prod.arjuntiwari.me.
+      Name: prod.arjuntiwari.me.
+      Type: A
+      TTL: 900
+      ResourceRecords:
+      - !GetAtt Ec2Instance.PublicIp
+
+
 
 
 
