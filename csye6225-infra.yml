@@ -310,6 +310,7 @@ Resources:
           source /etc/profile
           echo "Done with setting environment variables"
           sudo apt-get update -y
+          sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
           sudo pm2 reload all --update-env
           cd /home/ubuntu/webapp
           sudo pm2 delete app
