@@ -81,7 +81,7 @@ build {
     destination="/home/ubuntu/"
   }
 
-  provisioner "script" {
+  provisioner "shell" {
     inline = [
       "sudo mv /home/ubuntu/rebootScript.sh /var/lib/cloud/scripts/per-boot/",
       "sudo chmod 777 /var/lib/cloud/scripts/per-boot/rebootScript.sh"
