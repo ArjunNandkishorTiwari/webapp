@@ -10,10 +10,6 @@ sudo unzip webapp.zip -d webapp
 
 sudo npm i -g pm2
 
-sudo apt-get -y install iptables-persistent
-sudo systemctl enable netfilter-persistent
-
-
 
 cd /home/ubuntu/webapp
 
