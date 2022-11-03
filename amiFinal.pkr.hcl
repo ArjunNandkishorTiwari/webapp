@@ -76,6 +76,20 @@ build {
     script = "./veryfinal.sh"
   }
 
+  // provisioner "file" {
+  //   source = "./reboot.sh"
+  //   destination= "/home/ubuntu"
+  // }
+
+  // provisioner "shell" {
+  //   inline = [
+  //     "sudo mv /home/ubuntu/reboot.sh /var/lib/cloud/scripts/per-boot/",
+  //     "sudo chmod 777 /var/lib/cloud/scripts/per-boot/reboot.sh"
+  //   ]
+ // }
+
+
+
 
 
 }
