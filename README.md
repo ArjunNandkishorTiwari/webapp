@@ -1,6 +1,6 @@
 # webapp
 
-## Assignment - 5
+## Assignment - 6
 
 #### Name :- Arjun Nandkishor Tiwari
 #### NUID :- 002176236
@@ -41,7 +41,7 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 6. 
 
 
-aws --region us-east-1 --profile prod cloudformation create-stack --stack-name arjunVPC --template-body file://csye6225-infra.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=VpcCIDR,ParameterValue="10.192.0.0/16" ParameterKey=PublicSubnet1CIDR,ParameterValue="10.192.10.0/24" ParameterKey=PublicSubnet2CIDR,ParameterValue="10.192.11.0/24" ParameterKey=PublicSubnet3CIDR,ParameterValue="10.192.25.0/24" ParameterKey=AZ1,ParameterValue=0 ParameterKey=AZ2,ParameterValue=1 ParameterKey=AZ3,ParameterValue=001 ParameterKey=AmiID,ParameterValue="ami-0cb5902d4fd1cd078" ParameterKey=S3BucketName,ParameterValue="arjunprodclo" ParameterKey=DatabaseUser,ParameterValue="csye6225" ParameterKey=DatabasePassword,ParameterValue="csye6225" ParameterKey=DatabaseName,ParameterValue="csye6225" ParameterKey=DNSDomain,ParameterValue="prod.arjuntiwari.me."
+aws --region us-east-1 --profile prod cloudformation create-stack --stack-name arjunVPC --template-body file://csye6225-infra.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=VpcCIDR,ParameterValue="10.192.0.0/16" ParameterKey=PublicSubnet1CIDR,ParameterValue="10.192.10.0/24" ParameterKey=PublicSubnet2CIDR,ParameterValue="10.192.11.0/24" ParameterKey=PublicSubnet3CIDR,ParameterValue="10.192.25.0/24" ParameterKey=AZ1,ParameterValue=0 ParameterKey=AZ2,ParameterValue=1 ParameterKey=AZ3,ParameterValue=001 ParameterKey=AmiID,ParameterValue="ami-0ac0b254e410b8e3f" ParameterKey=S3BucketName,ParameterValue="arjunprodcl" ParameterKey=DatabaseUser,ParameterValue="csye6225" ParameterKey=DatabasePassword,ParameterValue="csye6225" ParameterKey=DatabaseName,ParameterValue="csye6225" ParameterKey=DNSDomain,ParameterValue="prod.arjuntiwari.me."
 
 
 aws configure --profile=profile_name
