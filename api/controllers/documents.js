@@ -119,6 +119,8 @@ module.exports = {
     
     
             const response = await getDocumentDataById(doc_ID, reqUser, reqPass);
+
+            console.log("response",response);
     
             if (response.status == 400){
                 return res.status(400).json({"msg":"Document not found"});
