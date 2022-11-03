@@ -41,7 +41,7 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 6. 
 
 
-aws --region us-east-1 --profile prod cloudformation create-stack --stack-name arjunVPC1 --template-body file://csye6225-infra.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=VpcCIDR,ParameterValue="10.192.0.0/16" ParameterKey=PublicSubnet1CIDR,ParameterValue="10.192.10.0/24" ParameterKey=PublicSubnet2CIDR,ParameterValue="10.192.11.0/24" ParameterKey=PublicSubnet3CIDR,ParameterValue="10.192.25.0/24" ParameterKey=AZ1,ParameterValue=0 ParameterKey=AZ2,ParameterValue=1 ParameterKey=AZ3,ParameterValue=001 ParameterKey=AmiID,ParameterValue="ami-0991b364306934b08" ParameterKey=S3BucketName,ParameterValue="arjunprodclragf" ParameterKey=DatabaseUser,ParameterValue="csye6225" ParameterKey=DatabasePassword,ParameterValue="csye6225" ParameterKey=DatabaseName,ParameterValue="csye6225" ParameterKey=DNSDomain,ParameterValue="prod.arjuntiwari.me."
+aws --region us-east-1 --profile prod cloudformation create-stack --stack-name myVPC --template-body file://csye6225-infra.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=VpcCIDR,ParameterValue="10.192.0.0/16" ParameterKey=PublicSubnet1CIDR,ParameterValue="10.192.10.0/24" ParameterKey=PublicSubnet2CIDR,ParameterValue="10.192.11.0/24" ParameterKey=PublicSubnet3CIDR,ParameterValue="10.192.25.0/24" ParameterKey=AZ1,ParameterValue=0 ParameterKey=AZ2,ParameterValue=1 ParameterKey=AZ3,ParameterValue=001 ParameterKey=AmiID,ParameterValue="ami-0a1b2bd9525cf5841" ParameterKey=S3BucketName,ParameterValue="aunodclrf" ParameterKey=DatabaseUser,ParameterValue="csye6225" ParameterKey=DatabasePassword,ParameterValue="csye6225" ParameterKey=DatabaseName,ParameterValue="csye6225" ParameterKey=DNSDomain,ParameterValue="prod.arjuntiwari.me."
 
 
 aws configure --profile=profile_name
@@ -51,3 +51,26 @@ cat ssh.pub
 
 
           sudo apt-get install iptables-persistent -y
+          ps aux | grep -i apt
+          sudo apt-get install iptables-persistent -y
+          sudo chmod 777 /etc/iptables/rules.v4
+
+          source /etc/profile
+          echo "Done with setting environment variables"
+          sudo apt-get update -y
+          sudo pm2 reload all --update-env
+          sudo apt-get update -y
+          sudo apt-get -y install iptables-persistent
+          sudo systemctl enable netfilter-persistent
+          sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
+          sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
+
+          sudo chmod 777 /etc/iptables/rules.v4
+          sudo iptables-save > /etc/iptables/rules.v4
+          cd /home/ubuntu/webapp
+          sudo pm2 delete app
+          sudo pm2 start app.js
+          sudo pm2 startup systemd
+          sudo pm2 save
+          sudo pm2 list
+
