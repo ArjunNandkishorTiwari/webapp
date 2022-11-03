@@ -344,7 +344,7 @@ Resources:
   RDSInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier : csye622
+      DBInstanceIdentifier : csye6225
       DBInstanceClass : db.t2.micro
       DBName : !Ref DatabaseName #########
       Engine : MySql
