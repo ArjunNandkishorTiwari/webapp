@@ -26,6 +26,7 @@ var uniqueFileName = "";
 
 const bucket = process.env.AWS_BUCKET;
 
+
 const S3 = new aws.S3();
 
 // const upload = multer({//
@@ -58,7 +59,9 @@ module.exports = {
             key: ( req, file, cb) => {
                 console.log(req.user);
                 console.log("File",file);
-                cb(null, uniqueFileName+'-'+path.basename(file.originalname)) //file.originalname
+                console.log(req.user+'-'+path.basename(file.originalname));
+                console.log(bucket, process.env.REGION,);
+                cb(null, uniqueFileName+"-"+path.basename(file.originalname)) //file.originalname
     
             }
            
@@ -66,11 +69,12 @@ module.exports = {
         })
     }),
     uploadMiddleware: async(req,res) => {
+        console.log("!!!!!!",bucket);
 
         console.log(req.file);
 
         const Obj = {
-            filename : uniqueFileName+'-'+path.basename(req.file.originalname), //path.extname
+            filename : uniqueFileName+"-"+path.basename(req.file.originalname), //path.extname
             location : req.file.location
 
         }
@@ -106,6 +110,61 @@ module.exports = {
                     status : 403
                 }
                 return response;
+            }
+
+
+            // const params = {
+            //     Bucket: bucket,
+            //     Key: fileData.filename
+            // }
+
+            const documentData = await Document.findOne({where : {name: fileData.filename}});
+
+
+            
+
+           
+
+            if (documentData) {
+
+               // const documentData = await Document.findOne({where : {name: fileData.filename}});
+
+                console.log("documentData",documentData);
+
+                var date  = new Date().toISOString();
+
+                Document.update({
+                    // doc_id : first_name,
+                    // user_id : last_name,
+                    // name : password,
+                    // account_updated : update_time
+                    // updatedAt : update_time
+                    
+                    doc_id: documentData.doc_id,
+                    user_id: documentData.user_id,
+                    name: documentData.name,
+                    date_created: date,
+                    s3_bucket_path: documentData.s3_bucket_path,
+                    
+    
+                },{
+                    where: { doc_id: documentData.doc_id }
+                });
+
+                const response = {
+                status: 201,
+                doc_id: documentData.doc_id,
+                user_id: documentData.user_id,
+                name: documentData.name,
+                date_created: date,
+                s3_bucket_path: documentData.s3_bucket_path,
+
+            }
+                // const response = {
+                //     status : 400
+                // }
+                return response;
+
             }
 
             var hashedId = crypto.randomBytes(16).toString("hex");
