@@ -1,6 +1,16 @@
+const SDC = require("statsd-client");
+const log = require("../middleware/logger");
+const logger = log.getLogger("logs")
+
+const sdc = new SDC({
+    host : 'localhost',
+    port : 8125,
+})
 
 
 const healthGet = (req,res) => {
+    sdc.increment('POST/Public/get healthz ');
+    logger.info("inside healthGet");
     res.set('Content-Type', 'application/json')
     res.status(200).send();
 

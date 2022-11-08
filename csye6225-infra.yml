@@ -312,13 +312,10 @@ Resources:
           sudo apt-get update -y
           sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
           sudo pm2 reload all --update-env
-          cd /home/ubuntu/webapp
-          sudo pm2 delete app
-          sudo pm2 start app.js
-          sudo pm2 startup systemd
-          sudo pm2 save
-          sudo pm2 list
-          sudo pm2 status
+          
+          sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/home/ubuntu/webapp/cloudwatch-config.json
+
+
 
 
 
@@ -397,6 +394,27 @@ Resources:
       Path: /
       RoleName: EC2-CSYE6225
       Policies:
+        - PolicyName: CloudWatchLog
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - 'ec2:DescribeTags'
+                  - 'cloudwatch:PutMetricData'
+                  - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogStreams'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:DescribeVolumes'
+                  - 'logs:DescribeLogGroups'
+                Resource: "*"
+              - Effect: Allow
+                Action: 
+                  - 'ssm:PutParameter'
+                  - 'ssm:GetParameter'
+                Resource: "arn:aws:ssm:*:*:parameter/AmazonCloudWatch-*"
+
         - PolicyName: WebAppS3
           PolicyDocument: 
             Version: '2012-10-17'
