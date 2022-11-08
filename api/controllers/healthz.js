@@ -1,4 +1,4 @@
-const SDC = require("statsd-client");
+var SDC = require("statsd-client");
 const log = require("../middleware/logger");
 const logger = log.getLogger("logs")
 

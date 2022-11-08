@@ -44,6 +44,7 @@ Repository for CSYE 6225 Network Structure and Cloud Computing (Fall 2022) under
 11. sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb #works
 12. sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 13. sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/home/ubuntu/webapp/webapp/cloudwatch-config.json
+14. aws cloudwatch list-metrics --namespace AWS/EC2 --dimensions Name=InstanceId,Value=i-1234567890abcdef0
 
 
 
