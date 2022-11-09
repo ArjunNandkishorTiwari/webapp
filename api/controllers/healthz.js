@@ -1,11 +1,19 @@
-var SDC = require("statsd-client");
 const log = require("../middleware/logger");
-const logger = log.getLogger("logs")
+const logger = log.getLogger("logs");
 
-const sdc = new SDC({
-    host : 'localhost',
-    port : 8125,
-})
+var lynx = require("lynx");
+
+const sdc = new lynx('localhost',8125);
+
+// var SDC = require("statsd-client");
+
+
+// const sdc = new SDC({
+//     host : 'localhost',
+//     port : 8125,
+// })
+
+
 
 
 const healthGet = (req,res) => {

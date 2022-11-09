@@ -3,13 +3,29 @@ const crypto = require("crypto");
 
 const {upload,uploadMiddleware, documentToData, getDocumentDataById, setUniqueName, deleteDocumentDataById, getAllDocuments} = require("../services/documents");
 const {getUserByUserName} = require("../services/users");
+// var SDC = require("statsd-client");
+
+const log = require("../middleware/logger");
+const logger = log.getLogger("logs")
 
 
+
+// const sdc = new SDC({
+//     host : 'localhost',
+//     port : 8125,
+// })
+
+var lynx = require("lynx");
+
+const sdc = new lynx('localhost',8125);
 
 
 module.exports = {
 
     getAllDocuments : async(req,res) => {
+
+        logger.info(" In Get All Documents");
+        sdc.increment("GET/v1/documents");
 
 
         try {
@@ -63,7 +79,8 @@ module.exports = {
 
     try {
 
-
+        logger.info(" In Upload Document");
+        sdc.increment("POST/v1/documents/");
 
         await setUniqueName(req.user);
 
@@ -113,6 +130,9 @@ module.exports = {
 
         try {
 
+            logger.info(" In Get Document By ID");
+            sdc.increment("GET/v1/documents/:id");
+
             const doc_ID = req.params.id;
             const reqUser = req.user;
             const reqPass = req.pass;
@@ -153,7 +173,11 @@ module.exports = {
     deleteDocument: async(req,res) => {
 
 
+
         try {
+
+            logger.info(" In Delete Document");
+            sdc.increment("DELETE/v1/documents/:id");
 
 
         const doc_ID = req.params.id;
