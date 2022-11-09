@@ -100,7 +100,7 @@ module.exports = {
         try {
 
             logger.info("inside get user by id")
-            sdc.increment("GET/v1/users/:id");
+            sdc.increment("GET/v1/users/id");
 
             const id = req.params.id;
        
@@ -142,7 +142,7 @@ module.exports = {
         try {
 
             logger.info("inside update user by id")
-            sdc.increment("PUT/v1/users/:id");
+            sdc.increment("PUT/v1/users/id");
 
             const id = req.params.id;
 
