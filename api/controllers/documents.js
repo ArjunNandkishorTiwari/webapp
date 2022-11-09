@@ -131,7 +131,7 @@ module.exports = {
         try {
 
             logger.info(" In Get Document By ID");
-            sdc.increment("GET/v1/documents/:id");
+            sdc.increment("GET/v1/documents/id");
 
             const doc_ID = req.params.id;
             const reqUser = req.user;
@@ -177,7 +177,7 @@ module.exports = {
         try {
 
             logger.info(" In Delete Document");
-            sdc.increment("DELETE/v1/documents/:id");
+            sdc.increment("DELETE/v1/documents/id");
 
 
         const doc_ID = req.params.id;
