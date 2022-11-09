@@ -5,6 +5,19 @@ const {createNewUser, getUserData, updateUserRecord } = require("../services/use
 
 const {validateEmailId} = require("../helper/helper");
 
+// var SDC = require("statsd-client");
+const log = require("../middleware/logger");
+const logger = log.getLogger("logs")
+
+// const sdc = new SDC({
+//     host : 'localhost',
+//     port : 8125,
+// })
+
+var lynx = require("lynx");
+
+const sdc = new lynx('localhost',8125);
+
 
 
 module.exports = {
@@ -12,6 +25,9 @@ module.exports = {
     createUser : async(req,res) => {
 
         try {
+
+            logger.info("inside create user")
+            sdc.increment("POST/v1/users/");
 
             if (
                 req.body.password == null ||  req.body.first_name == null || req.body.last_name == null || req.body.username == null
@@ -83,6 +99,9 @@ module.exports = {
 
         try {
 
+            logger.info("inside get user by id")
+            sdc.increment("GET/v1/users/:id");
+
             const id = req.params.id;
        
 
@@ -120,41 +139,53 @@ module.exports = {
         
     },
     updateUser : async (req,res) => {
-        const id = req.params.id;
+        try {
 
-        if (id == null){
-            res.status(400).send();
-            return;
-        }
+            logger.info("inside update user by id")
+            sdc.increment("PUT/v1/users/:id");
 
-        if (
-            "id" in req.body ||  "account_created" in req.body || "account_updated" in req.body || "username" in req.body
+            const id = req.params.id;
 
-
+            if (id == null){
+                res.status(400).send();
+                return;
+            }
+    
+            if (
+                "id" in req.body ||  "account_created" in req.body || "account_updated" in req.body || "username" in req.body
+    
+    
+                
+    
+            ){
+    
+                res.status(400).json({"msg" : "Cannot update id, username, created date , updated date"});
+                return;
+    
+            }
+    
             
-
-        ){
-
-            res.status(400).json({"msg" : "Cannot update id, username, created date , updated date"});
-            return;
-
+        const result = await updateUserRecord(req);
+    
+        if (result.status == 403){
+            return res.status(403).json({"msg" : "Forbidden"});
+    
         }
+    
+        if (result.status == 400){
+            return res.status(400).json({"msg":"Data not found"});
+    
+        }
+    
+        return res.status(204).send();
+    
+    
+            
+        } catch (error) {
 
-        
-    const result = await updateUserRecord(req);
-
-    if (result.status == 403){
-        return res.status(403).json({"msg" : "Forbidden"});
-
-    }
-
-    if (result.status == 400){
-        return res.status(400).json({"msg":"Data not found"});
-
-    }
-
-    return res.status(204).send();
-
+            console.log(error);
+            
+        }
    
         
     }
