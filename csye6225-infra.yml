@@ -393,28 +393,9 @@ Resources:
               - sts:AssumeRole
       Path: /
       RoleName: EC2-CSYE6225
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
       Policies:
-        - PolicyName: CloudWatchLog
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: 
-                  - 'ec2:DescribeTags'
-                  - 'cloudwatch:PutMetricData'
-                  - 'logs:PutLogEvents'
-                  - 'logs:DescribeLogStreams'
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:DescribeVolumes'
-                  - 'logs:DescribeLogGroups'
-                Resource: "*"
-              - Effect: Allow
-                Action: 
-                  - 'ssm:PutParameter'
-                  - 'ssm:GetParameter'
-                Resource: "arn:aws:ssm:*:*:parameter/AmazonCloudWatch-*"
-
         - PolicyName: WebAppS3
           PolicyDocument: 
             Version: '2012-10-17'
