@@ -26,6 +26,7 @@ module.exports = {
 
         logger.info(" In Get All Documents");
         sdc.increment("GET/v1/documents");
+        const timer = sdc.createTimer('documents.getall.time');
 
 
         try {
@@ -62,7 +63,7 @@ module.exports = {
 
 
        
-
+        timer.stop()
 
 
         return res.status(200).json(result);
@@ -85,6 +86,7 @@ module.exports = {
 
         logger.info(" In Upload Document");
         sdc.increment("POST/v1/documents/");
+        const timer = sdc.createTimer('documents.create.time');
 
         const reqUser = req.user;
         const reqPass = req.pass;
@@ -131,6 +133,8 @@ module.exports = {
                 return res.status(403).json({"msg" : "not authorized"});
             }
 
+            timer.stop();
+
             return res.status(201).json(response);
 
             
@@ -154,6 +158,7 @@ module.exports = {
 
             logger.info(" In Get Document By ID");
             sdc.increment("GET/v1/documents/id");
+            const timer = sdc.createTimer('documents.getbyid.time');
 
             const doc_ID = req.params.id;
             const reqUser = req.user;
@@ -181,7 +186,7 @@ module.exports = {
     
     
     
-    
+            timer.stop();
     
             return res.status(200).json(response);
     
@@ -200,6 +205,7 @@ module.exports = {
 
 
         try {
+            const timer = sdc.createTimer('documents.delete.time');
 
             logger.info(" In Delete Document");
             sdc.increment("DELETE/v1/documents/id");
@@ -226,6 +232,8 @@ module.exports = {
             logger.error("User not found");
             return res.status(401).json({"msg" : "User not found"});
         }
+
+        timer.stop();
 
         return res.status(204).json({msg: "DELETE Document by ID"});
             
