@@ -86,6 +86,22 @@ module.exports = {
         logger.info(" In Upload Document");
         sdc.increment("POST/v1/documents/");
 
+        const reqUser = req.user;
+        const reqPass = req.pass;
+
+
+        const userData = await getUserByUserName(reqUser,reqPass);
+
+        if (userData.status == 400){
+            logger.error("User not found");
+            return res.status(400).json({"msg":"user not found"});
+       }
+
+        if (userData.status == 403){
+            logger.error("Not Authorized");
+            return res.status(403).json({"msg" : "not authorized"});
+        }
+
         await setUniqueName(req.user);
 
 
