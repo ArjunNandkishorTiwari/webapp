@@ -36,7 +36,7 @@ module.exports = {
                 
     
             ){
-                console.log("check 0");
+                logger.error("Please provide all the data");
     
                 res.status(400).json({"msg" : "Please provide all the data"});
                 return;
@@ -47,8 +47,9 @@ module.exports = {
             const emailValidation = validateEmailId(username);
     
             if (emailValidation == false) {
-                console.log("check 1");
+                logger.error("Email validation failed");
                 return res.status(400).json({"msg" : "bad request"});
+                
             }
     
             const salt = bcrypt.genSaltSync(10) ;
@@ -78,15 +79,18 @@ module.exports = {
             console.log(response);
     
             if (response.status == 400){
-                console.log("check 2");
+                logger.error("Bad request");
                 return res.status(400).json({"msg" : "bad request"})
             }
             else{
+                logger.info("User created");
                 return res.status(201).json(response);
             }
     
             
         } catch (error) {
+
+            logger.error("In catch error");
 
             console.log(error)
             
@@ -106,24 +110,29 @@ module.exports = {
        
 
             if (!id) {
+                logger.error("Please provide ID");
     
                 return res.status(400).send();
+                
     
             }
     
             const response = await getUserData(id, req.user, req.pass);
     
             if (response.status == 400){
+                logger.error("User not found");
                 return res.status(400).json({"msg":"user not found"});
            }
     
             if (response.status == 403){
+                logger.error("Not Authorized");
                 return res.status(403).json({"msg" : "not authorized"});
             }
 
             return res.status(200).json(response);
             
         } catch (error) {
+            logger.error("In Catch Error");
             console.log(error);
             
         }
@@ -147,6 +156,7 @@ module.exports = {
             const id = req.params.id;
 
             if (id == null){
+                logger.error("Id not found");
                 res.status(400).send();
                 return;
             }
@@ -158,6 +168,7 @@ module.exports = {
                 
     
             ){
+                logger.error("Cannot Update");
     
                 res.status(400).json({"msg" : "Cannot update id, username, created date , updated date"});
                 return;
@@ -168,11 +179,13 @@ module.exports = {
         const result = await updateUserRecord(req);
     
         if (result.status == 403){
+            logger.error("Forbidden");
             return res.status(403).json({"msg" : "Forbidden"});
     
         }
     
         if (result.status == 400){
+            logger.error("Data not found");
             return res.status(400).json({"msg":"Data not found"});
     
         }
@@ -182,6 +195,7 @@ module.exports = {
     
             
         } catch (error) {
+            logger.error("In catch error");
 
             console.log(error);
             
