@@ -14,7 +14,7 @@ echo "Installing pm2"
 sudo npm i -g pm2
 
 echo "Going in webapp"
-cd /home/ubuntu/webapp/ #need to change path later
+cd /home/ubuntu/webapp/ 
 
 sudo mkdir -p /home/ubuntu/webapp/logs
 
