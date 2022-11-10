@@ -14,9 +14,13 @@ echo "Installing pm2"
 sudo npm i -g pm2
 
 echo "Going in webapp"
-cd /home/ubuntu/webapp/ #need to change path later
+cd /home/ubuntu/webapp/ 
 
+sudo mkdir -p /home/ubuntu/webapp/logs
 
+sudo touch /home/ubuntu/webapp/logs/csye6225.log
+
+sudo chmod 777 /home/ubuntu/webapp/logs/csye6225.log
 
 echo "Install node modules"
 
@@ -29,11 +33,7 @@ sudo pm2 list
 
 sudo pm2 status
 
-sudo mkdir -p /home/ubuntu/webapp/logs
 
-sudo touch /home/ubuntu/webapp/logs/csye6225.log
-
-sudo chmod 777 /home/ubuntu/webapp/logs/csye6225.log
 
 sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb #works
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
