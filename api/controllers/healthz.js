@@ -17,9 +17,11 @@ const sdc = new lynx('localhost',8125);
 
 
 const healthGet = (req,res) => {
+    const timer = sdc.createTimer('healthz.time');
     sdc.increment('POST/Public/get healthz ');
     logger.info("inside healthGet");
     res.set('Content-Type', 'application/json')
+    timer.stop();
     res.status(200).send();
 
 }

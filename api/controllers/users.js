@@ -28,6 +28,7 @@ module.exports = {
 
             logger.info("inside create user")
             sdc.increment("POST/v1/users/");
+            const timer = sdc.createTimer('users.create.time');
 
             if (
                 req.body.password == null ||  req.body.first_name == null || req.body.last_name == null || req.body.username == null
@@ -83,6 +84,7 @@ module.exports = {
                 return res.status(400).json({"msg" : "bad request"})
             }
             else{
+                timer.stop();
                 logger.info("User created");
                 return res.status(201).json(response);
             }
@@ -105,6 +107,7 @@ module.exports = {
 
             logger.info("inside get user by id")
             sdc.increment("GET/v1/users/id");
+            const timer = sdc.createTimer('users.getuser.time');
 
             const id = req.params.id;
        
@@ -128,7 +131,7 @@ module.exports = {
                 logger.error("Not Authorized");
                 return res.status(403).json({"msg" : "not authorized"});
             }
-
+            timer.stop();
             return res.status(200).json(response);
             
         } catch (error) {
@@ -152,6 +155,7 @@ module.exports = {
 
             logger.info("inside update user by id")
             sdc.increment("PUT/v1/users/id");
+            const timer = sdc.createTimer('users.update.time');
 
             const id = req.params.id;
 
@@ -189,6 +193,7 @@ module.exports = {
             return res.status(400).json({"msg":"Data not found"});
     
         }
+        timer.stop();
     
         return res.status(204).send();
     
