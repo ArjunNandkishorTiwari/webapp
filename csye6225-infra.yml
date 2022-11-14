@@ -395,6 +395,7 @@ Resources:
       RoleName: EC2-CSYE6225
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+        - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
       Policies:
         - PolicyName: WebAppS3
           PolicyDocument: 
@@ -431,6 +432,186 @@ Resources:
       TTL: 900
       ResourceRecords:
       - !GetAtt Ec2Instance.PublicIp
+
+
+  
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: 
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        - "arn:aws:iam::aws:policy/AmazonSESFullAccess"
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaRole"
+        - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Runtime: nodejs16.x
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          console.log("in lambda function")
+
+      FunctionName: MailInvoke
+      Description: Function to be invoked by sns topic and responsible for email services
+
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties: 
+      TopicName: EmailVerification
+      DisplayName: EmailVerification
+      Subscription:
+        - Protocol: lambda
+          Endpoint: !GetAtt LambdaFunction.Arn
+
+  SNSTopicPolicy:
+    Type: AWS::SNS::TopicPolicy 
+    Properties: 
+      PolicyDocument:
+        Version: '2008-10-17'
+        Statement: 
+          - Effect: Allow
+            Action: 
+              - sns:Publish
+            Resource: SNSTopic
+      PolicyName: SNSEmailPolicy
+      Roles: 
+        - !Ref EC2CSYE6225Role
+
+
+  SNSTopicPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn: LambdaFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      Principal: "sns.amazonaws.com"
+      FunctionName: !GetAtt LambdaFunction.Arn
+      SourceArn: !Ref SNSTopic
+
+
+  DynamoDBEmailTable:
+
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "Email"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "Email"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: "myDynamoDBEmailTable"
+
+
+  DynamoDBTokenTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "Token"
+          AttributeType: "S"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      KeySchema:
+        - AttributeName: "Token"
+          KeyType: "HASH"
+      TableName: "myDynamoDBTokenTable"
+      TimeToLiveSpecification:
+        AttributeName: TimeToLive
+        Enabled: true
+
+
+  DynamoDBTokenTablePolicy:
+    Type: AWS::IAM:Policy
+    Properties: 
+      PolicyName: DynamoDBTokenPolicy
+      Roles: 
+        - !Ref EC2CSYE6225Role
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: 
+              - 'dynamodb:List*'
+              - 'dynamodb:DescribeLimits'
+              - 'dynamodb:DescribeReservedCapacity*'
+              - 'dynamodb:DescribeTimeToLive'
+
+            Resource: 
+              - '*'
+
+          - Effect: Allow
+            Action:
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:Query'
+              - 'dynamodb:Delete*'
+              - 'dynamodb:Update*'
+              - 'dynamodb:DescribeStream'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:Get*'
+              - 'dynamodb:Scan'
+              - 'dynamodb:CreateTable'
+              - 'dynamodb:BatchWrite*'
+              - 'dynamodb:BatchGet*'
+
+            Resource: 
+            - !GetAtt DynamoDBTokenTable.Arn
+
+  DynamoDBEmailTablePolicy:
+    Type: AWS::IAM:Policy
+    Properties: 
+      PolicyName: DynamoDBEmailPolicy
+      Roles: 
+        - !Ref LambdaFunctionRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: 
+              - 'dynamodb:List*'
+              - 'dynamodb:DescribeLimits'
+              - 'dynamodb:DescribeReservedCapacity*'
+              - 'dynamodb:DescribeTimeToLive'
+
+            Resource: 
+              - '*'
+
+          - Effect: Allow
+            Action:
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:Query'
+              - 'dynamodb:Delete*'
+              - 'dynamodb:Update*'
+              - 'dynamodb:DescribeStream'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:Get*'
+              - 'dynamodb:Scan'
+              - 'dynamodb:CreateTable'
+              - 'dynamodb:BatchWrite*'
+              - 'dynamodb:BatchGet*'
+
+            Resource: 
+            - !GetAtt DynamoDBEmailTable.Arn
+
+
+
+
+
 
 
 
