@@ -1,6 +1,10 @@
-
+const dotenv = require("dotenv");
+dotenv.config();
 //const {createPool} = require("mysql");
-const config = require("config");
+const aws = require("aws-sdk");
+const uuid = require("uuid")
+
+//const config = require("config");
 const bcrypt = require("bcryptjs");
 const {comparePassword} = require("../helper/helper");
 const db = require("../middleware/db");
@@ -37,6 +41,45 @@ module.exports = {
         const newUser = new User(payload);
 
         const resp = await newUser.save();
+
+        const dynamoDB = new aws.DynamoDB({
+            region : 'us-east-1'
+        });
+
+        const timeElapse = 60*5;
+        const timeStart = Math.round(Date.now() / 1000);
+        const timeExpiry = timeElapse + timeStart;
+        const userToken = uuid.v4();
+
+        const paramsDynamo = {
+            TableName: 'myDynamoDBTokenTable',
+            Item:{
+                'Token':{
+                    S : userToken
+                },
+                'TokenTTL' : {
+                    N : timeExpiry.toString()
+                }
+
+            }
+        }
+
+        await dynamoDB.putItem(paramsDynamo).promise();
+
+        const paramsSNS = {
+            TopicArn : process.env.ARN_TOPIC_SNS,
+            Subject: userToken,
+            Message: payload.id
+        }
+
+        const snsClient = new aws.SNS({
+            region : 'us-east-1'
+        });
+
+        await snsClient.publish(paramsSNS).promise();
+
+
+
         
         const response = {
             id : payload.id,

@@ -306,6 +306,7 @@ Resources:
             export AWS_BUCKET=${S3BucketName}
             export DB_NAME=${DatabaseName}
             export DB_PASSWORD=${DatabasePassword}
+            export ARN_TOPIC_SNS=${SNSTopic}
           EOF
           source /etc/profile
           echo "Done with setting environment variables"
@@ -478,7 +479,7 @@ Resources:
           Endpoint: !GetAtt LambdaFunction.Arn
 
   SNSTopicPolicy:
-    Type: AWS::SNS::TopicPolicy 
+    Type: AWS::IAM::Policy 
     Properties: 
       PolicyDocument:
         Version: '2008-10-17'
@@ -486,7 +487,8 @@ Resources:
           - Effect: Allow
             Action: 
               - sns:Publish
-            Resource: SNSTopic
+            Resource:
+              - !Ref SNSTopic
       PolicyName: SNSEmailPolicy
       Roles: 
         - !Ref EC2CSYE6225Role
@@ -532,12 +534,12 @@ Resources:
           KeyType: "HASH"
       TableName: "myDynamoDBTokenTable"
       TimeToLiveSpecification:
-        AttributeName: TimeToLive
+        AttributeName: TokenTTL
         Enabled: true
 
 
   DynamoDBTokenTablePolicy:
-    Type: AWS::IAM:Policy
+    Type: AWS::IAM::Policy
     Properties: 
       PolicyName: DynamoDBTokenPolicy
       Roles: 
@@ -573,7 +575,7 @@ Resources:
             - !GetAtt DynamoDBTokenTable.Arn
 
   DynamoDBEmailTablePolicy:
-    Type: AWS::IAM:Policy
+    Type: AWS::IAM::Policy
     Properties: 
       PolicyName: DynamoDBEmailPolicy
       Roles: 
