@@ -94,6 +94,14 @@ module.exports = {
             return response;
         }
 
+        if (userFind.user_verified == false){
+            const response = {
+                status : 403
+            }
+            return response;
+
+        }
+
         const hash = comparePassword(req.pass,userFind.password);
 
 
@@ -223,6 +231,14 @@ module.exports = {
                 return response;
             }
 
+            if (userFind.user_verified == false){
+                const response = {
+                    status : 403
+                }
+                return response;
+
+            }
+
             const hash = comparePassword(pass,userFind.password);
 
 
@@ -296,6 +312,14 @@ module.exports = {
                 return response;
             }
 
+            if (userFind.user_verified == false){
+                const response = {
+                    status : 403
+                }
+                return response;
+
+            }
+
             const hash = comparePassword(pass,userFind.password);
 
 
@@ -347,9 +371,27 @@ module.exports = {
             console.log(error);
         }
     },
-    getAllDocuments : async (id) => {
+    getAllDocuments : async (user_id_find) => {
 
-        const documentData = await Document.findAll({where : {user_id: id}});
+
+        const userFind = await User.findOne({where : {id: user_id_find}});
+
+            if (userFind == null){
+                const response = {
+                    status : 403
+                }
+                return response;
+            }
+
+            if (userFind.user_verified == false){
+                const response = {
+                    status : 403
+                }
+                return response;
+
+            }
+
+        const documentData = await Document.findAll({where : {user_id: user_id_find}});
 
         if (documentData == null){
             const response = {
