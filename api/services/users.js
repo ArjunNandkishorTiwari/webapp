@@ -358,7 +358,7 @@ module.exports = {
     
             const dynamoRes = await dynamoDB.getItem(paramsDynamoGet).promise();
     
-            console.log(dynamo);
+            console.log(dynamoRes); //it was giving error here
             logger.info("Dynamo DB token response", dynamoRes);
     
             const timeNow = Math.round(Date.now()/1000);
