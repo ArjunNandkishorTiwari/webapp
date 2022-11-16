@@ -1,13 +1,13 @@
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
-const {createNewUser, getUserData, updateUserRecord } = require("../services/users");
+const {createNewUser, getUserData, updateUserRecord, verifyEmail } = require("../services/users");
 
 const {validateEmailId} = require("../helper/helper");
 
 // var SDC = require("statsd-client");
 const log = require("../middleware/logger");
-const logger = log.getLogger("logs")
+const logger = log.getLogger("logs");
 
 // const sdc = new SDC({
 //     host : 'localhost',
@@ -207,6 +207,32 @@ module.exports = {
         }
    
         
+    },
+    verifyUserEmail : async (req,res) => {
+        logger.info("inside verify user")
+        sdc.increment("GET/v1/verifyUserEmail");
+        const timer = sdc.createTimer('users.verifyUserEmail.time');
+
+        const username = req.query.email;
+        const token = req.query.token;
+
+        const result = await verifyEmail(username,token);
+
+        if (result.status == 400 ){
+            return res.status(400).json({"msg" : result.msg});
+
+        }
+
+
+
+
+
+
+        timer.stop();
+
+        return res.status(200).json(result.msg);
+
+
     }
 
 
