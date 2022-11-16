@@ -35,6 +35,16 @@ const User = sequelize.define("users",{
         type: Sequelize.STRING,
         allowNull: false
 
+    },
+    user_verified:{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: true
+
+    },
+    user_verified_time:{
+        type: Sequelize.STRING,
+        allowNull: true
     }
 
 },{

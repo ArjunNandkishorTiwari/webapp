@@ -8,8 +8,13 @@ const uuid = require("uuid")
 const bcrypt = require("bcryptjs");
 const {comparePassword} = require("../helper/helper");
 const db = require("../middleware/db");
+//onst { loggers } = require("winston");
 
 const User = db.models.User;
+
+const log = require("../middleware/logger");
+const logger = log.getLogger("logs");
+
 
 // const pool = createPool({
 //     host : config.get("host"),
@@ -305,6 +310,85 @@ module.exports = {
 
             return response;
 
+            
+        } catch (error) {
+            console.log(error);
+            
+        }
+
+
+
+    },
+    verifyEmail : async(user, token) => {
+
+        try {
+
+            const dynamoDB = new aws.DynamoDB({
+                region : 'us-east-1'
+            });
+    
+            const userFind  = await User.findOne({where : {username: user}})
+    
+            if (userFind == null){
+                const response = {
+                    status : 400,
+                    msg : "User Not Found"
+                }
+                return response;
+            }
+    
+            if (userFind.user_verified){
+                const response = {
+                    status : 400,
+                    msg : "Email already verified"
+                }
+                return response;
+            }
+            
+    
+            const paramsDynamoGet = {
+                TableName : 'myDynamoDBTokenTable',
+                Key: {
+                    'Token' : {
+                        S : token 
+                    },
+                }
+    
+            }
+    
+            const dynamoRes = await dynamoDB.getItem(paramsDynamoGet).promise();
+    
+            console.log(dynamo);
+            logger.info("Dynamo DB token response", dynamoRes);
+    
+            const timeNow = Math.round(Date.now()/1000);
+    
+            if ((dynamoRes.Item == undefined )|| timeNow > (dynamoRes.Item.TokenTTL.N) ){
+                const response = {
+                    status : 400,
+                    msg : "Token Expired"
+                }
+                return response;
+    
+            }
+    
+            await userFind.update(
+                {
+                    user_verified : true
+                },
+                {
+                    where : {
+                        username : user
+                    }
+                });
+
+                const response = {
+                    status : 200,
+                    msg : "Token Validation Successful"
+                }
+    
+                return response;
+    
             
         } catch (error) {
             console.log(error);
