@@ -50,8 +50,8 @@ module.exports = {
         const dynamoDB = new aws.DynamoDB({
             region : 'us-east-1'
         });
-
-        const timeElapse = 60*5;
+        const minutes = process.env.TOKEN_TTL_EXPIRY;
+        const timeElapse = 60*minutes;
         const timeStart = Math.round(Date.now() / 1000);
         const timeExpiry = timeElapse + timeStart;
         const userToken = uuid.v4();
@@ -118,6 +118,14 @@ module.exports = {
                 return response;
             }
 
+            if (userFind.user_verified == false){
+                const response = {
+                    status : 403
+                }
+                return response;
+
+            }
+
             console.log("user Data", userFind);
 
             const hash = comparePassword(pass,userFind.password);
@@ -176,6 +184,14 @@ module.exports = {
                     status : 400
                 }
                 return response;
+            }
+
+            if (userUpdate.user_verified == false){
+                const response = {
+                    status : 403
+                }
+                return response;
+
             }
     
             const hash = comparePassword(payload.pass,userUpdate.password);
@@ -371,10 +387,13 @@ module.exports = {
                 return response;
     
             }
+
+            var date  = new Date().toISOString();
     
             await userFind.update(
                 {
-                    user_verified : true
+                    user_verified : true,
+                    user_verified_time : date
                 },
                 {
                     where : {
