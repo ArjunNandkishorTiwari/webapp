@@ -74,7 +74,8 @@ module.exports = {
         const paramsSNS = {
             TopicArn : process.env.ARN_TOPIC_SNS,
             Subject: userToken,
-            Message: payload.username
+            Message: payload.username,
+            Type: "Verification"
         }
 
         const snsClient = new aws.SNS({
