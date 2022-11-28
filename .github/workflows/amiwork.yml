@@ -54,8 +54,7 @@ jobs:
 
       - name: Start AMI
         run: |
-              packer build --var-file=amiFinal.pkrvars.hcl amiFinal.pkr.hcl
-              AMI_ID=$(jq -r '.builds[-1].artifact_id' output.json | cut -d ":" -f2)
+              packer build --var-file=amiFinal.pkrvars.hcl amiFinal.pkr.hcl | AMI_ID=$(jq -r '.builds[-1].artifact_id' output.json | cut -d ":" -f2)
               echo "AMI Id"
               echo "$AMI_ID"
         env:
