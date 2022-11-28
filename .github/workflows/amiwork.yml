@@ -19,6 +19,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      ami_id: ""
 
     runs-on: ubuntu-latest
 
@@ -64,10 +65,12 @@ jobs:
 
       - name: Get AMI Id
         run: |
-              AMI_ID=$(jq -r '.builds[-1].artifact_id' output.json | cut -d ":" -f2)
+              echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' output.json | cut -d ":" -f2)" >> $GITHUB_ENV
               echo "AMI Id"
-              echo "$AMI_ID"
-              echo "::set-output name=AMI_ID::$AMI_Id"
+              echo ${{ env.AMI_ID}}
+
+      - name: Check if env var works
+        run: echo ${{ env.AMI_ID}}
 
 
 
