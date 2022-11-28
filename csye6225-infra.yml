@@ -234,6 +234,24 @@ Resources:
 
 
 
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+         Ref: VPC
+      GroupDescription: Allow http to client host
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: "0.0.0.0/0"
+
+
+
   InstanceSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -242,21 +260,15 @@ Resources:
       GroupDescription: Allow http to client host
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 9000
           ToPort: 9000
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId:
+            Fn::GetAtt:
+              - LoadBalancerSecurityGroup
+              - GroupId
 
 
 
@@ -278,52 +290,6 @@ Resources:
           
 
   
-  Ec2Instance: 
-    Type: AWS::EC2::Instance
-    DependsOn:
-      - RDSInstance
-      - S3Bucket
-      - S3BucketIAMInstance
-
-    Properties: 
-      InstanceType: t2.micro
-      DisableApiTermination: false
-      ImageId: !Ref AmiID
-      KeyName: aws_mac
-      SecurityGroupIds: 
-        - !Ref InstanceSecGroup
-      SubnetId: !Ref PublicSubnet1
-      BlockDeviceMappings:
-        - DeviceName: /dev/sdc
-          Ebs:
-            VolumeSize: 8
-            VolumeType: gp2
-            DeleteOnTermination: true
-      IamInstanceProfile: !Ref S3BucketIAMInstance
-      UserData:
-        Fn::Base64:
-          !Sub |
-          #!/bin/bash
-          cat > /etc/environment << 'EOF'
-
-            export DB_HOST=${RDSInstance.Endpoint.Address}
-            export DB_USER=${DatabaseUser}
-            export AWS_BUCKET=${S3BucketName}
-            export DB_NAME=${DatabaseName}
-            export DB_PASSWORD=${DatabasePassword}
-            export ARN_TOPIC_SNS=${SNSTopic}
-            export TOKEN_TTL_EXPIRY=${ExpirationMinute}
-          EOF
-          source /etc/profile
-          echo "Done with setting environment variables"
-          sudo apt-get update -y
-          sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
-          sudo pm2 reload all --update-env
-          
-          sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/home/ubuntu/webapp/cloudwatch-config.json
-
-
-
 
 
 
@@ -430,15 +396,15 @@ Resources:
         - !Ref EC2CSYE6225Role
 
 
-  DNSHost:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneName: !Ref DNSDomain #prod.arjuntiwari.me.
-      Name: !Ref DNSDomain #prod.arjuntiwari.me.
-      Type: A
-      TTL: 900
-      ResourceRecords:
-      - !GetAtt Ec2Instance.PublicIp
+  # DNSHost:
+  #   Type: AWS::Route53::RecordSet
+  #   Properties:
+  #     HostedZoneName: !Ref DNSDomain #prod.arjuntiwari.me.
+  #     Name: !Ref DNSDomain #prod.arjuntiwari.me.
+  #     Type: A
+  #     TTL: 900
+  #     ResourceRecords:
+  #     - !GetAtt Ec2Instance.PublicIp
 
 
   
@@ -618,11 +584,197 @@ Resources:
             - !GetAtt DynamoDBEmailTable.Arn
 
 
+  AutoScalingStack:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones:
+        - !Select [0, !GetAZs '']
+        - !Select [1, !GetAZs '']
+        - !Select [2, !GetAZs '']
+      VPCZoneIdentifier:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+        - !Ref PublicSubnet3
+      MinSize: 1
+      MaxSize: 3
+      Cooldown: "300"
+      DesiredCapacity: 3
+      TargetGroupARNs:
+        - !Ref LoadBalancerTargetGroup
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref WebAppLaunchTemplate
+        Version: !GetAtt WebAppLaunchTemplate.LatestVersionNumber
+
+  WebAppLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    DependsOn:
+      - RDSInstance
+      - S3Bucket
+      - S3BucketIAMInstance
+    Properties:
+      LaunchTemplateName: !Sub ${AWS::StackName}-web-app-launch-template
+      LaunchTemplateData: 
+        BlockDeviceMappings:
+          - DeviceName: "/dev/sdm"
+            Ebs:
+              Encrypted: true
+              VolumeSize: "20"
+              VolumeType: "gp2"
+              DeleteOnTermination: "true"
+        InstanceType: t2.micro
+        ImageId: !Ref AmiID
+        KeyName: aws_mac
+        SecurityGroupIds: 
+          - !Ref InstanceSecGroup
+        IamInstanceProfile:
+          Arn: !GetAtt
+            - S3BucketIAMInstance
+            - Arn
+        UserData:
+          Fn::Base64:
+            !Sub |
+            #!/bin/bash
+            cat > /etc/environment << 'EOF'
+
+              export DB_HOST=${RDSInstance.Endpoint.Address}
+              export DB_USER=${DatabaseUser}
+              export AWS_BUCKET=${S3BucketName}
+              export DB_NAME=${DatabaseName}
+              export DB_PASSWORD=${DatabasePassword}
+              export ARN_TOPIC_SNS=${SNSTopic}
+              export TOKEN_TTL_EXPIRY=${ExpirationMinute}
+            EOF
+            source /etc/profile
+            echo "Done with setting environment variables"
+            sudo apt-get update -y
+            sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
+            sudo pm2 reload all --update-env
+
+            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/home/ubuntu/webapp/cloudwatch-config.json
+          
+
+
+
+  EC2LoadBalance: 
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      IpAddressType: ipv4
+      Name: EC2LoadBalancer
+      Scheme: internet-facing
+      Subnets: 
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+        - !Ref PublicSubnet3
+      SecurityGroups:
+        - !GetAtt LoadBalancerSecurityGroup.GroupId
+      Type: application
+ 
+  LoadBalancerTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: LoadBalancerTargetGroup
+      TargetType: instance
+      Protocol: HTTP
+      Port: 9000
+      VpcId: !Ref VPC
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: /healthz
+      HealthCheckPort: 9000
+      HealthCheckProtocol: HTTP
+      UnhealthyThresholdCount: 2
+      HealthyThresholdCount: 5
+
+
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref EC2LoadBalance
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref LoadBalancerTargetGroup
+
+
+  DNSWebApp:
+    Type: AWS::Route53::RecordSet
+    DependsOn: EC2LoadBalance
+    Properties:
+      HostedZoneName: !Ref DNSDomain #prod.arjuntiwari.me.
+      Name: !Ref DNSDomain #prod.arjuntiwari.me.
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt EC2LoadBalance.DNSName
+        HostedZoneId: !GetAtt EC2LoadBalance.CanonicalHostedZoneID
+ 
+
+
+
+
+  ScaleUpPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref AutoScalingStack
+      AdjustmentType: ChangeInCapacity
+      ScalingAdjustment: 1
+
+  ScaleDownPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref AutoScalingStack
+      AdjustmentType: ChangeInCapacity
+      ScalingAdjustment: -1
+
+
+  CPUHighUsage:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: CPU High Usage Alarm
+      AlarmDescription: Trigger CPU alarm for thrreshold more than 3
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      AlarmActions:
+        - !Ref ScaleUpPolicy
+      Statistic: Average
+      Period: 300
+      Threshold: 3
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref AutoScalingStack
+
+
+  CPULowUsage:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: CPU Low Usage Alarm
+      AlarmDescription: Trigger CPU alarm for threshold less than 2
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      AlarmActions:
+        - !Ref ScaleDownPolicy
+      Statistic: Average
+      Period: 300
+      Threshold: 2
+      EvaluationPeriods: 1
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref AutoScalingStack
+
+
+      
 
 
 
 
 
+
+
+
+  
 
 
 
