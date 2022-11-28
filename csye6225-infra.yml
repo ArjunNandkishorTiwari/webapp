@@ -676,7 +676,7 @@ Resources:
       Name: LoadBalancerTargetGroup
       TargetType: instance
       Protocol: HTTP
-      Port: 3002
+      Port: 9000
       VpcId: !Ref VPC
       HealthCheckIntervalSeconds: 30
       HealthCheckPath: /healthz
@@ -690,7 +690,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref EC2LoadBalance
-      Port: 443
+      Port: 80
       Protocol: HTTP
       DefaultActions:
         - Type: forward
