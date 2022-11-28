@@ -314,8 +314,10 @@ Resources:
   RDSInstance:
     Type: AWS::RDS::DBInstance
     Properties:
+      KmsKeyId: !Ref KmsRdsKey
+      StorageEncrypted: true
       DBInstanceIdentifier : csye6225
-      DBInstanceClass : db.t2.micro
+      DBInstanceClass : db.t3.micro
       DBName : !Ref DatabaseName #########
       Engine : MySql
       EngineVersion : 8.0.27
@@ -621,6 +623,7 @@ Resources:
               VolumeSize: "20"
               VolumeType: "gp2"
               DeleteOnTermination: "true"
+              KmsKeyId: !GetAtt KmsEbsKey.Arn
         InstanceType: t2.micro
         ImageId: !Ref AmiID
         KeyName: aws_mac
@@ -765,11 +768,40 @@ Resources:
           Value: !Ref AutoScalingStack
 
 
-      
+  KmsRdsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: Encryption for RDS
+      KeyPolicy:
+        Version: "2012-10-17"
+        Id: key-default-rds
+        Statement:
+          - Sid: Encryption for RDS
+            Effect: Allow
+            Principal:
+              AWS:
+                - arn:aws:iam::116759853696:root
+            Action: 'kms:*'
+            Resource: '*'
 
 
 
-
+  KmsEbsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: Encryption for EBS Volume
+      KeyPolicy:
+        Version: "2012-10-17"
+        Id: key-default-ebs
+        Statement:
+          - Sid: Encryption of EBS Volume
+            Effect: Allow
+            Principal:
+              AWS:
+                - arn:aws:iam::116759853696:root
+                - arn:aws:iam::116759853696:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling
+            Action: 'kms:*'
+            Resource: '*'
 
 
 
