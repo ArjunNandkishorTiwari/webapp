@@ -76,6 +76,14 @@ build {
     script = "./veryfinal.sh"
   }
 
+  post-processor "manifest" {
+    output = "output.json"
+    strip_path = true
+    custom_data = {
+      my_custom_data = "example"
+    }
+  }
+
 
 
 
