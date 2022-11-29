@@ -72,6 +72,10 @@ jobs:
       - name: Check if env var works
         run: echo ${{ env.AMI_ID}}
 
+      - name: Create Launch Template Copy
+        run: | 
+              aws ec2 create-launch-template-version --launch-template-name ${{secrets.LAUNCH_TEMPLATE_NAME}} --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}''
+
 
 
             
