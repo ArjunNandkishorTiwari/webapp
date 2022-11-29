@@ -74,7 +74,7 @@ jobs:
 
       - name: Create Launch Template Copy
         run: | 
-              aws ec2 create-launch-template-version --launch-template-name ${{secrets.LAUNCH_TEMPLATE_NAME}} --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}''
+              aws ec2 create-launch-template-version --launch-template-name ${{secrets.LAUNCH_TEMPLATE_NAME}} --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}'
 
 
 
