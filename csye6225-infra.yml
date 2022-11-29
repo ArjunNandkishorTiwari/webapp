@@ -614,7 +614,7 @@ Resources:
       - S3Bucket
       - S3BucketIAMInstance
     Properties:
-      LaunchTemplateName: !Sub ${AWS::StackName}-web-app-launch-template
+      LaunchTemplateName: !Sub ${AWS::StackName}-web-app-launch-template #this will be passed for updation myvpc/myvpcarjun
       LaunchTemplateData: 
         BlockDeviceMappings:
           - DeviceName: "/dev/sdm"
@@ -650,7 +650,6 @@ Resources:
             source /etc/profile
             echo "Done with setting environment variables"
             sudo apt-get update -y
-            sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
             sudo pm2 reload all --update-env
 
             sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/home/ubuntu/webapp/cloudwatch-config.json
