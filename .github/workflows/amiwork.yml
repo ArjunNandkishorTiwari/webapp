@@ -72,6 +72,16 @@ jobs:
       - name: Check if env var works
         run: echo ${{ env.AMI_ID}}
 
+
+      - name: Reconfigure AWS Credentials for Prod account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+
+
       - name: Create Launch Template Copy
         run: | 
               aws ec2 create-launch-template-version --launch-template-name myVPC-web-app-launch-template --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}'
