@@ -88,11 +88,11 @@ jobs:
 
       - name: Update Auto Scale Group 
         run: |
-              aws autoscaling update-auto-scaling-group --auto-scaling-group-name my-asg --launch-template LaunchTemplateName=myVPC-auto-scaling-group,Version='$Latest'
+              aws autoscaling update-auto-scaling-group --auto-scaling-group-name myVPC-auto-scaling-group --launch-template LaunchTemplateName=myVPC-web-app-launch-template,Version='$Latest'
 
       - name: Refresh Instance
         run: |
-              start-instance-refresh --auto-scaling-group-name myVPC-auto-scaling-group
+              aws autoscaling start-instance-refresh --auto-scaling-group-name myVPC-auto-scaling-group
 
 
 
