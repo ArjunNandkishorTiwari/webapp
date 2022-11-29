@@ -88,7 +88,7 @@ jobs:
 
       - name: Update Auto Scale Group 
         run: |
-              aws autoscaling update-auto-scaling-group --auto-scaling-group-name myVPC-auto-scaling-group --launch-template LaunchTemplateName=myVPC-web-app-launch-template,Version='$Latest'
+              aws autoscaling update-auto-scaling-group --auto-scaling-group-name myVPC-auto-scaling-group --launch-template LaunchTemplateId=${{ secrets.AWS_LAUNCH_TEMPLATE_ID }},Version='$Latest'
 
       - name: Refresh Instance
         run: |
