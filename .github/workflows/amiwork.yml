@@ -86,6 +86,14 @@ jobs:
         run: | 
               aws ec2 create-launch-template-version --launch-template-name myVPC-web-app-launch-template --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}'
 
+      - name: Update Auto Scale Group 
+        run: |
+              aws autoscaling update-auto-scaling-group --auto-scaling-group-name my-asg --launch-template LaunchTemplateName=myVPC-auto-scaling-group,Version='$Latest'
+
+      - name: Refresh Instance
+        run: |
+              start-instance-refresh --auto-scaling-group-name myVPC-auto-scaling-group
+
 
 
             

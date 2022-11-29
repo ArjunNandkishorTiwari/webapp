@@ -589,6 +589,7 @@ Resources:
   AutoScalingStack:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
+      AutoScalingGroupName: !Sub ${AWS::StackName}-auto-scaling-group
       AvailabilityZones:
         - !Select [0, !GetAZs '']
         - !Select [1, !GetAZs '']
@@ -680,7 +681,7 @@ Resources:
       Protocol: HTTP
       Port: 9000
       VpcId: !Ref VPC
-      HealthCheckIntervalSeconds: 30
+      HealthCheckIntervalSeconds: 90
       HealthCheckPath: /healthz
       HealthCheckPort: 9000
       HealthCheckProtocol: HTTP
