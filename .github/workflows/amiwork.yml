@@ -84,7 +84,7 @@ jobs:
 
       - name: Create Launch Template Copy
         run: | 
-              aws ec2 create-launch-template-version --launch-template-name myVPC-web-app-launch-template --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}'
+              aws ec2 create-launch-template-version --launch-template-name myVPC-web-app-launch-template --source-version 1 --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}'
 
       - name: Update Auto Scale Group 
         run: |
