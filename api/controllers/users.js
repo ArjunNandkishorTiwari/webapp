@@ -33,7 +33,7 @@ module.exports = {
             if (
                 req.body.password == null ||  req.body.first_name == null || req.body.last_name == null || req.body.username == null
     
-    
+                
                 
     
             ){
@@ -46,7 +46,7 @@ module.exports = {
             const {username,password,first_name,last_name} = req.body;
     
             const emailValidation = validateEmailId(username);
-    
+            logger.info("line 49")
             if (emailValidation == false) {
                 logger.error("Email validation failed");
                 return res.status(400).json({"msg" : "bad request"});
@@ -60,7 +60,7 @@ module.exports = {
             var date  = new Date().toISOString();
     
             var hashedId = crypto.randomBytes(16).toString("hex");
-    
+            logger.info("line 63")
             const payload = {
                 id : hashedId,
                 username : username,
@@ -73,7 +73,7 @@ module.exports = {
     
     
             }
-    
+            logger.info("line 76")
     
             const response = await createNewUser(payload);
     
