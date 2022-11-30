@@ -30,6 +30,7 @@ const logger = log.getLogger("logs");
 
 module.exports = {
     createNewUser : async (payload) => {
+        logger.info("service create new user")
 
         const user = await User.findOne({where : {username: payload.username}})
 
@@ -42,7 +43,7 @@ module.exports = {
 
             return response;
         }
-
+        logger.info("service create new user 46")
         const newUser = new User(payload);
 
         const resp = await newUser.save();
@@ -56,6 +57,8 @@ module.exports = {
         const timeExpiry = timeElapse + timeStart;
         const userToken = uuid.v4();
 
+        logger.info("service create new user 60")
+
         const paramsDynamo = {
             TableName: 'myDynamoDBTokenTable',
             Item:{
@@ -68,7 +71,7 @@ module.exports = {
 
             }
         }
-
+        logger.info("service create new user 74")
         await dynamoDB.putItem(paramsDynamo).promise();
 
         const paramsSNS = {
@@ -77,13 +80,15 @@ module.exports = {
             Message: payload.username
         }
 
+        logger.info("service create new user 83")
+
         const snsClient = new aws.SNS({
             region : 'us-east-1'
         });
 
         await snsClient.publish(paramsSNS).promise();
 
-
+        logger.info("service create new user 91")
 
         
         const response = {
@@ -94,6 +99,8 @@ module.exports = {
             account_created : payload.account_created,
             account_updated : payload.account_updated
         }
+
+        logger.info("service create new user 103")
 
         return response;
 
