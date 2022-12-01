@@ -263,7 +263,6 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: "0.0.0.0/0"
         - IpProtocol: tcp
           FromPort: 9000
           ToPort: 9000
@@ -630,8 +629,15 @@ Resources:
         InstanceType: t2.micro
         ImageId: !Ref AmiID
         KeyName: aws_mac
-        SecurityGroupIds: 
-          - !Ref InstanceSecGroup
+        NetworkInterfaces:
+          - DeviceIndex: 0
+            AssociatePublicIpAddress: true
+            DeleteOnTermination: true
+            Groups:
+              - !Ref InstanceSecGroup
+
+
+
         IamInstanceProfile:
           Arn: !GetAtt
             - S3BucketIAMInstance
