@@ -84,15 +84,15 @@ jobs:
 
       - name: Create Launch Template Copy
         run: | 
-              aws ec2 create-launch-template-version --launch-template-name ${{ LAUNCH_TEMPLATE_NAME }} --source-version 1 --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}'
+              aws ec2 create-launch-template-version --launch-template-name myVPC-web-app-launch-template --source-version 1 --launch-template-data '{"ImageId":"${{ env.AMI_ID}}"}'
 
       - name: Update Auto Scale Group 
         run: |
-              aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${{ secrets.AUTO_SCALE_GROUP_NAME }} --launch-template LaunchTemplateName=${{ LAUNCH_TEMPLATE_NAME }},Version='$Latest'
+              aws autoscaling update-auto-scaling-group --auto-scaling-group-name myVPC-auto-scaling-group --launch-template LaunchTemplateName=myVPC-web-app-launch-template,Version='$Latest'
 
       - name: Refresh Instance
         run: |
-              aws autoscaling start-instance-refresh --auto-scaling-group-name ${{ secrets.AUTO_SCALE_GROUP_NAME }}
+              aws autoscaling start-instance-refresh --auto-scaling-group-name myVPC-auto-scaling-group
 
 
 
