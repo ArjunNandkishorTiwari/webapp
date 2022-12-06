@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 
-app.use("/healthz",routerHealthz);
+app.use("/health",routerHealthz);
 app.use("/v1/account",routeUser);
 app.use("/v1/documents",routeDocument);
 app.use("/v1/verifyUserEmail",routeVerify);

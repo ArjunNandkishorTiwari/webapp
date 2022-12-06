@@ -751,7 +751,7 @@ Resources:
         - !Ref ScaleUpPolicy
       Statistic: Average
       Period: 300
-      Threshold: 3
+      Threshold: 5
       EvaluationPeriods: 1
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
